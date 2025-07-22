@@ -71,9 +71,9 @@ lovelace:
     - url: /hacsfiles/hass-sidebar-swipe/hass-sidebar-swipe.js
       type: module
 
-    - url: /local/troinine/light-slider-card.js
+    - url: /local/light-slider-card.js
       type: module
-    - url: "/local/marked.min.js?v=4.2.12"
+    - url: "/local/marked.min.js"
       type: module
 
     - url: /local/style.css
