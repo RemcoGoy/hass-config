@@ -1,5 +1,35 @@
+homeassistant:
+  auth_providers:
+    - type: homeassistant
+    - type: trusted_networks
+      trusted_networks:
+        - !secret hass_trusted_network_1
+        - !secret hass_trusted_network_2
+  name: "Koti"
+  latitude: !secret hass_latitude
+  longitude: !secret hass_longitude
+  unit_system: metric
+  temperature_unit: C
+  country: BE
+  currency: EUR
+  time_zone: "Europe/Brussels"
+  internal_url: !secret hass_internal_url
+  external_url: !secret hass_external_url
+  customize: !include include/customizations.yaml
+  allowlist_external_dirs:
+    - /config
+
 # Loads default set of integrations. Do not remove.
 default_config:
+
+tts:
+  - platform: google_translate
+
+logger:
+  default: warning
+  logs:
+    homeassistant.components.websocket_api: fatal
+    homeassistant.setup: error
 
 # Load frontend themes from the themes folder
 frontend:
@@ -10,3 +40,45 @@ frontend:
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
+
+lovelace:
+  mode: yaml
+  resources:
+    - url: /hacsfiles/button-card/button-card.js
+      type: module
+    - url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js
+      type: module
+    - url: /hacsfiles/lovelace-fold-entity-row/fold-entity-row.js
+      type: module
+    - url: /hacsfiles/lovelace-slider-entity-row/slider-entity-row.js
+      type: module
+    - url: /hacsfiles/lovelace-layout-card/layout-card.js
+      type: module
+    - url: /hacsfiles/light-entity-card/light-entity-card.js
+      type: module
+    - url: /hacsfiles/apexcharts-card/apexcharts-card.js
+      type: module
+    - url: /hacsfiles/swipe-card/swipe-card.js
+      type: module
+    - url: /hacsfiles/weather-chart-card/weather-chart-card.js
+      type: module
+    - url: /hacsfiles/lovelace-xiaomi-vacuum-map-card/xiaomi-vacuum-map-card.js
+      type: module
+    - url: /hacsfiles/bar-card/bar-card.js
+      type: module
+    - url: /hacsfiles/lovelace-template-entity-row/template-entity-row.js
+      type: module
+    - url: /hacsfiles/lovelace-text-input-row/lovelace-text-input-row.js
+      type: module
+    - url: /hacsfiles/lovelace-mushroom/mushroom.js
+      type: module
+    - url: /hacsfiles/hass-sidebar-swipe/hass-sidebar-swipe.js
+      type: module
+
+    - url: /local/troinine/light-slider-card.js
+      type: module
+    - url: "/local/marked.min.js?v=4.2.12"
+      type: module
+
+    - url: /local/style.css
+      type: css
