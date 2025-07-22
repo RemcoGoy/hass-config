@@ -1,0 +1,212 @@
+---
+mobile:
+  # https://github.com/custom-cards/button-card/issues/632
+  ha-card-border-width: 0
+
+  ### Card mod
+  card-mod-theme: mobile
+  view-background: url('/local/img/background.png')
+
+  card-mod-root: |
+    hui-view-container#view {
+      background-size: cover;
+      margin-top: 0;
+      padding-top: 0;
+      height: 100vh;
+    }
+    div.header {
+      display: none;
+    }
+
+  card-mod-view-yaml: |
+    "#view>hui-view>hui-masonry-view$#columns>div": |
+      div.column {
+        margin: 0 2rem 0 2rem;
+      }
+    .: |
+      hui-view {
+        background: none !important;
+        min-height: 100vh;
+      }
+      vertical-layout {
+        margin: 0 var(--view-side-margin);
+      }
+
+  card-mod-more-info-yaml: |
+    .: |
+      ha-dialog {
+        --vertical-align-dialog: center !important;
+        --dialog-surface-margin-top: 0 !important;
+        --mdc-theme-surface: var(--primary-background-color);
+      }
+    ha-header-bar$: |
+      header {
+        background: var(--popup-header-color) !important;
+      }
+
+  card-mod-card: |
+    .type-custom-bar-card bar-card-name {
+      padding-left: 0.4rem;
+      letter-spacing: normal;
+    }
+    .type-custom-bar-card bar-card-iconbar {
+      padding-left: 0.3rem;
+    }
+    .type-custom-bar-card bar-card-row {
+      margin-bottom: var(--custom-entities-card-marging) !important;
+    }
+    .type-custom-bar-card bar-card-row:last-child {
+      margin-bottom: 0 !important;
+    }
+    .type-custom-bar-card bar-card-backgroundbar {
+      background: none;
+    }
+    .type-custom-bar-card bar-card-currentbar {
+      border-radius: 0.3rem;
+    }
+    .type-custom-bar-card bar-card-background  {
+      box-shadow: inset 0 0 25px #00000070;
+      border-radius: 0.3rem;
+      overflow: hidden;
+    }
+
+  # Card
+  border-radius: "0.8rem"
+  ha-card-box-shadow: "var(--box-shadow)"
+  ha-card-border-radius: var(--border-radius)
+
+  # Button card
+  button-card-icon-drop-shadow-size: 0.2rem
+  button-card-img-cell-box-shadow-size: 0.75rem
+  button-card-padding: 1rem
+  button-card-compact-height: 12vh
+
+  # Entities card
+  custom-entities-card-marging: 0
+
+  # Grid
+  grid-card-gap: 2rem
+
+  # Dialog
+  mdc-dialog-scrim-color: rgba(0, 0, 0, 0.4)
+  mdc-dialog-backdrop-blur: 0.1vw
+  mdc-dialog-min-height: 100%
+
+  # Browser mod popup
+  popup-border-radius: 0
+  popup-padding-x: 0
+  popup-padding-y: 0
+
+  # Stack cards
+  horizontal-stack-card-margin: 0.5rem
+  vertical-stack-card-margin: 0 0 0.2rem 0
+
+  # Views
+  view-side-margin: 1.5rem
+  masonry-view-card-margin: 1rem
+  #header-height: 0
+
+  modes:
+    light:
+      # Background and sidebar
+      card-background-color: "#ffffff"
+      primary-background-color: "#ffffff"
+      secondary-background-color: "#ffffff"
+
+      # Card
+      box-shadow: "0px 6px 8px 0px rgba(0,0,0,0.2)"
+
+      # Custom
+      custom-color-icon-background: "#E9F0FE"
+
+    dark:
+      state-icon-color: "var(--color-theme)"
+      error-color: "var(--google-red)"
+      warning-color: "var(--google-yellow)"
+      success-color: "var(--google-green)"
+      info-color: "var(--google-blue)"
+      divider-color: "rgba(var(--color-theme-rgb),.12)"
+      accent-color: "var(--google-yellow)"
+      primary-text-color: "#CDD9E5"
+
+      # Main interface colors
+      primary-color: "#89B3F8"
+      google-red: "#F18B82"
+      google-green: "#80C994"
+      google-yellow: "#FCD663"
+      google-blue: "#89B3F8"
+      google-violet: "#BB86FC"
+      google-grey: "#BBBBBB"
+      color-red: "rgb(241, 139, 130)"
+      color-green: "rgb(128, 201, 148)"
+      color-green-rgb: "128, 201, 148"
+      color-yellow: "rgb(252, 214, 99)"
+      color-blue: "rgb(137, 179, 248)"
+      color-blue-rgb: "137, 179, 248"
+      color-theme: "rgb(205, 217, 229)"
+      color-theme-rgb: "205, 217, 229"
+      color-purple: "rgb(102, 31, 255)"
+      color-grey: "rgb(187, 187, 187)"
+      color-grey-rgb: "187, 187, 187"
+      color-pink: "rgb(233, 30, 99)"
+      color-background-yellow: "var(--color-yellow)"
+      color-background-blue: "var(--color-blue)"
+      color-background-green: "var(--color-green)"
+      color-background-red: "var(--color-red)"
+      color-background-pink: "var(--color-pink)"
+      color-background-purple: "var(--color-purple)"
+      color-yellow-text: "var(--color-yellow)"
+      color-blue-text: "var(--color-blue)"
+      color-green-text: "var(--color-green)"
+      color-red-text: "var(--color-red)"
+      color-pink-text: "var(--color-pink)"
+      color-purple-text: "var(--color-purple)"
+      opacity-bg: "0.1"
+
+      # Floating button text color
+      mdc-theme-on-secondary: "var(--card-background-color)"
+
+      # Background and sidebar
+      card-background-color: "#1D1D1D"
+      primary-background-color: "#121212"
+      secondary-background-color: "#121212"
+
+      # Header
+      app-header-text-color: "var(--primary-text-color)"
+      app-header-background-color: "var(--primary-background-color)"
+      paper-tabs-selection-bar-color: "var(--primary-text-color)"
+
+      # Sidebar
+      sidebar-selected-text-color: "var(--color-blue))"
+      sidebar-selected-icon-color: "var(--color-blue))"
+
+      # Slider
+      slider-color: "var(--color-blue))"
+      slider-bar-color: "rgba(var(--color-blue-rgb),0.38)"
+
+      # Card
+      card-background-color-rgb: "29, 29, 29"
+      box-shadow: "0px 4px 6px 0px rgba(0,0,0,0.4)"
+
+      # Dialog
+      mdc-dialog-scrim-color: rgba(0, 0, 0, 0.4)
+
+      # Popups
+      popup-background-color: var(--primary-background-color)
+      popup-header-color: var(--primary-background-color)
+
+      # Bar card
+      bar-card-color: "#303435"
+
+      # Custom
+      humidity-low-color: "#00ccf5"
+      humidity-high-color: "#0336FF"
+      warning-color-rgb: "255, 145, 1"
+      primary-text-color-rgb: "205, 217, 229"
+      custom-icon-color: "dodgerblue"
+      custom-icon-color-not-active: "rgba(var(--color-theme-rgb), 0.2)"
+      custom-color-icon-background: "#181515"
+      battery-full-color: "#388E3C"
+      button-color: "#388E3C"
+      chart-first-series-color: "dodgerblue"
+      chart-second-series-color: "#388E3C"
