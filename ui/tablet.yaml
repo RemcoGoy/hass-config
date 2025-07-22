@@ -3,7 +3,7 @@ button_card_templates: !include_dir_merge_named ../button_card_templates/
 apexcharts_card_templates: !include templates/apexcharts/charts.yaml
 
 views:
-  - title: "Tabletti"
+  - title: "Tablet"
     path: home
     icon: mdi:home
     type: custom:grid-layout

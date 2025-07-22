@@ -169,19 +169,19 @@
         icon: mdi:star-three-points-outline
         unit_of_measurement: "%"
 
-    - name: roborock_s6_pure_time_to_next_clean
-      unique_id: roborock_s6_pure_time_to_next_clean
-      state: >
-        {% set last_clean = states('sensor.roborock_s6_pure_last_clean_end') %}
-        {% if last_clean in [None, 'unknown', 'unavailable'] %}
-          {{ (now() + timedelta(days=3)).isoformat() }}
-        {% else %}
-          {{ (as_datetime(last_clean) + timedelta(days=3)).isoformat() }}
-        {% endif %}
-      attributes:
-        friendly_name: Seuraava siivous
-        icon: mdi:vacuum-outline
-        device_class: timestamp
+    # - name: roborock_s6_pure_time_to_next_clean
+    #   unique_id: roborock_s6_pure_time_to_next_clean
+    #   state: >
+    #     {% set last_clean = states('sensor.roborock_s6_pure_last_clean_end') %}
+    #     {% if last_clean in [None, 'unknown', 'unavailable'] %}
+    #       {{ (now() + timedelta(days=3)).isoformat() }}
+    #     {% else %}
+    #       {{ (as_datetime(last_clean) + timedelta(days=3)).isoformat() }}
+    #     {% endif %}
+    #   attributes:
+    #     friendly_name: Seuraava siivous
+    #     icon: mdi:vacuum-outline
+    #     device_class: timestamp
 
     - name: roborock_s6_pure_area_cleaned_since_dustbin_emptying
       unique_id: roborock_s6_pure_area_cleaned_since_dustbin_emptying

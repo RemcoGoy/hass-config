@@ -1,0 +1,144 @@
+action: fire-dom-event
+browser_mod:
+  service: browser_mod.popup
+  data:
+    title: Pesutorni
+    style: |
+      --popup-max-width: 90vw;
+    card_mod:
+      style:
+        layout-card:
+          $grid-layout$:
+            .: |
+              #root {
+                margin: 0 1rem 1rem 1rem !important;
+              }
+
+    content:
+      type: custom:layout-card
+      layout_type: custom:grid-layout
+      layout:
+        grid-template-columns: 1fr 1fr
+        grid-template-rows: min-content min-content
+        grid-template-areas: |
+          "washing dryer"
+          "graph1 graph2"
+        place-items: start stretch
+      cards:
+        - type: vertical-stack
+          view_layout:
+            grid-area: washing
+          cards:
+            - type: entities
+              card_mod: !include ../../ui/styles/entities-card.yaml
+              title: Pesukone
+              show_header_toggle: false
+              entities:
+                - entity: sensor.washing_machine_status
+                  name: Tila
+                - entity: binary_sensor.washing_machine_door
+                  name: Ovi
+                - entity: sensor.washing_machine_energy_consumption
+                  name: Sähkönkulutus
+                - entity: sensor.washing_machine_water_consumption
+                  name: Vedenkulutus
+                - entity: sensor.washing_machine_program
+                  name: Ohjelma
+                - entity: sensor.washing_machine_remaining_time
+                  name: Jäljellä oleva aika
+                - entity: sensor.washing_machine_energy_consumption_monthly
+                  name: Kuukauden sähkö
+                - type: custom:template-entity-row
+                  entity: input_datetime.washing_machine_cleaned
+                  icon: mdi:spray-bottle
+                  name: Puhdistettu
+                  state: "{{ states('input_datetime.washing_machine_cleaned') }}"
+                - entity: counter.washing_machine_runs_after_cleaning
+                - type: custom:bar-card
+                  entity_row: true
+                  unit_of_measurement: "%"
+                  width: 50%
+                  height: 2rem
+                  positions:
+                    icon: outside
+                    indicator: "off"
+                    name: outside
+                  entities:
+                    - entity: sensor.miele_washing_machine_ultraphase_1_level_percentage
+                      name: Ultraphase 1
+                      severity:
+                        - color: "var(--warning-color)"
+                          from: 10
+                          to: 15
+                        - color: "var(--error-color)"
+                          from: 0
+                          to: 9
+
+                - type: section
+
+        - type: vertical-stack
+          view_layout:
+            grid-area: dryer
+          cards:
+            - type: entities
+              card_mod: !include ../../ui/styles/entities-card.yaml
+              title: Kuivausrumpu
+              show_header_toggle: false
+              entities:
+                - entity: sensor.tumble_dryer_status
+                  name: Tila
+                - entity: binary_sensor.tumble_dryer_door
+                  name: Ovi
+                - entity: sensor.tumble_dryer_energy_consumption
+                  name: Sähkönkulutus
+                - entity: sensor.tumble_dryer_program
+                  name: Ohjelma
+                - entity: sensor.tumble_dryer_remaining_time
+                  name: Jäljellä oleva aika
+                - entity: binary_sensor.tumble_dryer_failure
+                  name: Virhe
+                - entity: sensor.tumble_dryer_energy_consumption_monthly
+                  name: Kuukauden sähkö
+                - type: custom:template-entity-row
+                  entity: input_datetime.tumble_dryer_cleaned
+                  icon: mdi:spray-bottle
+                  name: Puhdistettu
+                  state: "{{ states('input_datetime.tumble_dryer_cleaned') }}"
+                - entity: counter.tumble_dryer_runs_after_cleaning
+                - type: custom:bar-card
+                  entity_row: true
+                  unit_of_measurement: "%"
+                  width: 50%
+                  height: 2rem
+                  positions:
+                    icon: outside
+                    indicator: "off"
+                    name: outside
+                  entities:
+                    - entity: sensor.miele_washing_machine_ultraphase_2_level_percentage
+                      name: Ultraphase 2
+                      severity:
+                        - color: "var(--warning-color)"
+                          from: 10
+                          to: 15
+                        - color: "var(--error-color)"
+                          from: 0
+                          to: 9
+
+                - type: section
+
+        - type: custom:apexcharts-card
+          view_layout:
+            grid-area: graph1
+            place-self: end stretch
+          card_mod: !include ../../ui/styles/no-card.yaml
+          config_templates:
+            - sensor_washing_machine
+
+        - type: custom:apexcharts-card
+          view_layout:
+            grid-area: graph2
+            place-self: end stretch
+          card_mod: !include ../../ui/styles/no-card.yaml
+          config_templates:
+            - sensor_tumble_dryer

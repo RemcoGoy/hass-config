@@ -1,0 +1,116 @@
+action: fire-dom-event
+browser_mod:
+  service: browser_mod.popup
+  data:
+    title: Koti
+    style: |
+      --popup-max-width: calc(390px + 390px + 390px);
+    card_mod:
+      style:
+        layout-card:
+          $grid-layout$:
+            .: |
+              #root {
+                margin: 0 1rem 1rem 1rem !important;
+              }
+    content:
+      type: custom:layout-card
+      layout_type: custom:grid-layout
+      layout:
+        grid-template-columns: 1fr 1fr 1fr
+        grid-template-rows: fit-content(100%) 1fr
+        grid-template-areas: |
+          "home electricity automations"
+          "graph1 graph2 automations"
+        place-items: start stretch
+      cards:
+        - type: entities
+          view_layout:
+            grid-area: home
+          card_mod: !include ../../ui/styles/entities-card.yaml
+          title: Koti
+          show_header_toggle: false
+          entities:
+            - entity: sensor.home_state
+              name: Tila
+            - entity: lock.ulko_ovi
+              name: Ulko-ovi
+            - entity: binary_sensor.mqtt_garage_door
+            - type: custom:template-entity-row
+              entity: input_datetime.ventilation_filters_replaced
+              icon: mdi:air-filter
+              name: Suodattimet vaihdettu
+              state: "{{ states('input_datetime.ventilation_filters_replaced') }}"
+            - entity: sensor.ventilation_filters_days_remaining
+            - entity: input_boolean.on_vacation
+            - type: section
+
+        - type: entities
+          view_layout:
+            grid-area: automations
+          card_mod: !include ../../ui/styles/entities-card.yaml
+          title: Automaatiot
+          show_header_toggle: false
+          entities:
+            - entity: input_boolean.automations_enabled
+            - entity: automation.aseta_poissa_tila
+            - entity: automation.kotona
+            - entity: automation.liike_eteisessa
+            - entity: automation.aloita_iltarutiinit
+            - entity: automation.start_go_to_sleep
+            - entity: automation.aloita_nukkumaanmeno_viikonloppuisin
+              name: Aloita nukkumaanmeno vkl
+            - entity: automation.herata_arkisin
+            - entity: automation.valot_paalle_yolla
+            - entity: automation.valojen_palautus_yolla
+            - entity: automation.sytyta_ulkovalot
+            - entity: automation.sammuta_ulkovalot_2
+            - entity: automation.sammuta_kodinhoitohuoneen_valot
+
+        - type: entities
+          view_layout:
+            grid-area: electricity
+          card_mod: !include ../../ui/styles/entities-card.yaml
+          title: Sähkönkulutus
+          show_header_toggle: false
+          entities:
+            - entity: sensor.mqtt_electricity_consumption_daily_updated
+              name: Päivitetty
+            - entity: sensor.mqtt_electricity_consumption_daily
+              name: Päivän kulutus
+            - entity: sensor.mqtt_electricity_consumption_monthly
+              name: Kuukauden kulutus
+            - entity: sensor.mqtt_energy_cost_monthly
+              name: Kuukauden hinta
+            - type: custom:template-entity-row
+              state: ""
+            - type: custom:template-entity-row
+              state: ""
+            - type: section
+
+        - type: custom:apexcharts-card
+          view_layout:
+            grid-area: graph1
+            place-self: end stretch
+          card_mod: !include ../../ui/styles/no-card.yaml
+          config_templates:
+            - sensor_electricity_consumption_daily
+
+        - type: custom:apexcharts-card
+          view_layout:
+            grid-area: graph2
+            place-self: end stretch
+          card_mod: !include ../../ui/styles/no-card.yaml
+          config_templates:
+            - sensor_generic_dual
+          header:
+            title: Vuotovahdit
+          series:
+            - entity: sensor.mqtt_utility_room_leak_detector_humidity
+              color: dodgerblue
+              show:
+                name_in_header: false
+            - entity: sensor.mqtt_kitchen_leak_detector_humidity
+              color: dodgerblue
+              show:
+                name_in_header: false
