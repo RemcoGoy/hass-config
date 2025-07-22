@@ -1,0 +1,308 @@
+base:
+  variables:
+    is_active: |
+      [[[ return ['on', 'open', 'Kotona', 'home', 'cleaning', 'returning', 'idle'].indexOf(entity === undefined || entity.state) !== -1; ]]]
+  template:
+    - language_variables
+  # Fix to https://github.com/home-assistant/core/issues/90957
+  state_display: |
+    [[[
+      const domain = entity.entity_id.split(".")[0];
+      switch (entity.state) {
+        case "home":
+          return variables.text_state_home;
+        case "not_home":
+          return variables.text_state_not_home
+        default:
+          return variables[`text_state_${domain}_${entity.state}`];
+      }
+    ]]]
+  styles:
+    name:
+      - margin-top: 0
+    state:
+      - margin-top: 0
+    card:
+      # Fixes ripple border-radius with Safari
+      - "-webkit-backface-visibility": hidden
+      - "-moz-backface-visibility": hidden
+      - "-webkit-transform": translate3d(0, 0, 0)
+      - "-moz-transform": translate3d(0, 0, 0)
+
+base_card:
+  variables:
+    state_colors: false
+    card_glow: false
+    card_shadow_enabled: true
+  aspect_ratio: 1/1
+  template:
+    - base
+  styles:
+    name:
+      - font-size: 1rem
+      - font-weight: 500
+    label:
+      - font-size: 0.8rem
+    state:
+      - font-size: 0.9rem
+      - font-weight: 500
+    custom_fields:
+      state2:
+        - font-size: 0.9rem
+      state3:
+        - font-size: 0.9rem
+    card:
+      - border-radius: var(--border-radius)
+      - padding: var(--button-card-padding)
+      - "-webkit-box-shadow": |
+          [[[
+            if (!variables.card_glow) {
+              return variables.card_shadow_enabled ? 'var(--box-shadow)' : 'none'
+            }
+
+            var state = entity.state
+            if (variables.state_colors) {
+              var color = variables.state_colors[state]
+              if (color) {
+                return '0 0 0.95rem 0.2rem ' + color
+              }
+            }
+
+            if (variables.icon_color) {
+              return '0 0 0.95rem 0.2rem ' + variables.icon_color
+            }
+
+            return variables.card_shadow_enabled ? 'var(--box-shadow)' : 'none'
+          ]]]
+      - box-shadow: |
+          [[[
+            if (!variables.card_glow) {
+              return variables.card_shadow_enabled ? 'var(--box-shadow)' : 'none'
+            }
+
+            var state = entity.state
+            if (variables.state_colors) {
+              var color = variables.state_colors[state]
+              if (color) {
+                return '0 0 0.95rem 0.2rem ' + color
+              }
+            }
+
+            if (variables.icon_color) {
+              return '0 0 0.95rem 0.2rem ' + variables.icon_color
+            }
+
+            return variables.card_shadow_enabled ? 'var(--box-shadow)' : 'none'
+          ]]]
+      - transition: |
+          [[[
+            if (!variables.card_glow) {
+              return 'none'
+            } else {
+              return 'all 2s ease'
+            }
+          ]]]
+
+# Cannot inherit base_card
+compact_card:
+  aspect_ratio: null
+  styles:
+    card:
+      - height: var(--button-card-compact-height)
+
+wide_card:
+  aspect_ratio: 2/1
+
+base_icon_button:
+  template:
+    - base
+  show_name: false
+  show_state: false
+  show_icon: true
+  styles:
+    icon:
+      - width: 1.8rem
+      - color: |
+          [[[
+            return variables.is_active ? 'var(--primary-text-color)' : 'var(--custom-icon-color-not-active)'
+          ]]]
+    img_cell:
+      - width: 3rem
+      - height: 2.5rem
+      - background-color: transparent
+      - border-radius: 50%
+      - justify-self: center
+      - align-self: center
+    card:
+      - box-shadow: none
+      - background-color: "rgba(var(--primary-text-color-rgb), 0.05)"
+      - border-radius: 1rem
+
+base_icon:
+  template:
+    - base
+  variables:
+    icon_glow: false
+    state_colors: false
+    icon_color: false
+  show_icon: true
+  styles:
+    icon:
+      - width: 1.6rem
+      - color: |
+          [[[
+            if (!entity) {
+              if (variables.icon_color) {
+                return variables.icon_color
+              }
+
+              return 'var(--custom-icon-color-not-active)'
+            }
+
+            var state = entity.state
+            if (variables.state_colors) {
+              var color = variables.state_colors[state]
+              if (color) {
+                return color
+              }
+            }
+
+            if (variables.icon_color) {
+              return variables.icon_color
+            }
+
+            return 'var(--custom-icon-color-not-active)'
+          ]]]
+      - filter: |
+          [[[
+            if (!entity) {
+              return 'none'
+            }
+
+            var state = entity.state
+            if (variables.state_colors) {
+              var color = variables.state_colors[state]
+              if (color) {
+                return `drop-shadow(0 0 var(--button-card-icon-drop-shadow-size) ${color})`
+              }
+            }
+
+            if (variables.icon_color) {
+              return `drop-shadow(0 0 var(--button-card-icon-drop-shadow-size) ${variables.icon_color})`
+            }
+
+            return 'none'
+          ]]]
+      - transition: all 2s ease
+    img_cell:
+      - background-color: var(--custom-color-icon-background)
+      - border-radius: 50%
+      - justify-self: start
+      - "-webkit-box-shadow": |
+          [[[
+            if (!variables.icon_glow) {
+              return 'none'
+            }
+
+            var state = entity.state
+            if (variables.state_colors) {
+              var color = variables.state_colors[state]
+              if (color) {
+                return '0 0 var(--button-card-img-cell-box-shadow-size) ' + color
+              }
+            }
+
+            if (variables.icon_color) {
+              return '0 0 var(--button-card-img-cell-box-shadow-size) ' + variables.icon_color
+            }
+
+            return 'none'
+          ]]]
+      - box-shadow: |
+          [[[
+            if (!variables.icon_glow) {
+              return 'none'
+            }
+
+            var state = entity.state
+            if (variables.state_colors) {
+              var color = variables.state_colors[state]
+              if (color) {
+                return '0 0 var(--button-card-img-cell-box-shadow-size)' + color
+              }
+            }
+
+            if (variables.icon_color) {
+              return '0 0 var(--button-card-img-cell-box-shadow-size) ' + variables.icon_color
+            }
+
+            return 'none'
+          ]]]
+      - transition: all 2s ease
+
+base_icon_name:
+  show_icon: true
+  show_name: true
+  show_label: false
+  show_state: false
+  template:
+    - base_icon
+  styles:
+    img_cell:
+      - background-color: var(--custom-color-icon-background)
+      - border-radius: 50%
+      - width: 3rem
+      - height: 3rem
+      - place-self: center
+    name:
+      - justify-self: start
+      - align-self: center
+
+# Templates with grid styles
+icon_name_state:
+  template:
+    - base_icon_name
+  show_state: true
+  styles:
+    grid:
+      - grid-template-areas: |
+          "i n"
+          "i s"
+      - grid-template-columns: 2.5rem 3.5fr
+      - grid-template-rows: 1.25rem 1.25rem
+    name:
+      - padding-left: 0.8rem
+      - align-self: end
+      - font-size: 1rem
+      - font-weight: 500
+    state:
+      - font-size: 0.9rem
+      - font-weight: 500
+      - filter: opacity(40%)
+      - place-self: start start
+      - padding-left: 0.8rem
+    card:
+      - box-shadow: none
+      - border-radius: var(--border-radius)
+      - padding: 0 0 0 0
+      - margin: 0 0 0 0
+      - overflow: visible
+
+empty:
+  variables:
+    height: 6rem
+  show_name: false
+  show_label: false
+  show_icon: false
+  tap_action:
+    action: none
+  hold_action:
+    action: none
+  double_tap_action:
+    action: none
+  styles:
+    card:
+      - height: "[[[ return variables.height ]]]"
+      - background-color: transparent
+      - box-shadow: none
+      - "--mdc-ripple-press-opacity": 0

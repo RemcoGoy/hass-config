@@ -1,0 +1,357 @@
+---
+button_card_templates: !include_dir_merge_named ../button_card_templates/
+apexcharts_card_templates: !include templates/apexcharts/charts.yaml
+
+views:
+  - title: "Tabletti"
+    path: home
+    icon: mdi:home
+    type: custom:grid-layout
+    layout:
+      grid-template-columns: 0 1.1fr repeat(3, 1fr) 0
+      grid-template-rows: 0fr 1fr 1fr 0fr
+      grid-gap: 3vw 2vw
+      grid-template-areas: |
+        ". .        .       .        .       ."
+        ". sidebar  home    lvi      devices ."
+        ". sidebar  lights  children family  ."
+        ". .        footer  footer   footer  ."
+    cards:
+      ###
+      ### Sidebar
+      ###
+
+      - type: custom:layout-card
+        layout_type: custom:grid-layout
+        view_layout:
+          grid-area: sidebar
+        layout:
+          margin: 0
+          grid-template-columns: 1fr
+          grid-template-rows: max-content max-content
+          grid-template-areas: |
+            "clock"
+            "notifications"
+        cards:
+          - type: custom:button-card
+            view_layout:
+              grid-area: "clock"
+              place-self: "start center"
+            template: clock
+            entity: sensor.time
+            variables:
+              entity_weather: weather.koti
+              entity_date: sensor.date
+              entity_temperature: sensor.netatmo_outdoor_temperature
+              weather_tap_action: !include ../popups/common/weather-forecast.yaml
+
+          - type: vertical-stack
+            view_layout:
+              grid-area: "notifications"
+              place-self: "start stretch"
+            cards: !include notifications.yaml
+
+      ###
+      ### Home
+      ###
+
+      - type: vertical-stack
+        view_layout:
+          grid-area: "home"
+        cards:
+          - type: "custom:button-card"
+            template: group_title
+            name: Koti
+            tap_action: !include ../popups/tablet/home.yaml
+
+          - type: grid
+            columns: 2
+            cards:
+              - type: custom:button-card
+                template:
+                  - info
+                  - home_state
+                tap_action: !include ../popups/tablet/home.yaml
+                show_last_changed: false
+                show_label: true
+                label: |
+                  [[[
+                    var sensor = states['sensor.mqtt_electricity_consumption_daily']
+                    if (sensor) {
+                      return `Eilen ${helpers.localize(sensor)}`
+                    } else {
+                      return helpers.relativeTime(sensor.last_changed)
+                    }
+                  ]]]
+
+              - type: "custom:button-card"
+                template:
+                  - info
+                  - air_quality
+                tap_action: !include ../popups/tablet/air-quality.yaml
+
+              - type: "custom:button-card"
+                template:
+                  - sensor
+                  - nordpool
+                tap_action: !include ../popups/tablet/electricity.yaml
+
+              - type: "custom:button-card"
+                template:
+                  - info
+                  - garage_door
+                tap_action: !include ../popups/common/garage.yaml
+
+      ###
+      ### Lights
+      ###
+
+      - type: vertical-stack
+        view_layout:
+          grid-area: "lights"
+        cards:
+          - type: "custom:button-card"
+            template: group_title
+            name: Valaistus
+            tap_action: !include ../popups/tablet/lights.yaml
+
+          - type: grid
+            columns: 2
+            cards:
+              - type: "custom:button-card"
+                template: new_light
+                entity: light.group_all
+                variables:
+                  name: Kaikki
+                  tap_action: !include ../popups/tablet/lights.yaml
+                  hold_action:
+                    action: toggle
+
+              - type: "custom:button-card"
+                template: new_light
+                entity: light.group_living_areas
+                variables:
+                  name: Oleskelutilat
+
+              - type: "custom:button-card"
+                template: new_light
+                entity: light.group_office
+                variables:
+                  name: Työhuone
+
+              - type: "custom:button-card"
+                template: new_light
+                entity: light.group_bedroom
+                variables:
+                  name: Makuuhuone
+
+      ###
+      ### LVI
+      ###
+
+      - type: vertical-stack
+        view_layout:
+          grid-area: "lvi"
+        cards:
+          - type: "custom:button-card"
+            template: group_title
+            name: Lämmitys ja vesi
+            tap_action: !include ../popups/tablet/heating.yaml
+
+          - type: grid
+            columns: 2
+            cards:
+              - type: custom:button-card
+                template:
+                  - info
+                  - heat_pump_state
+                tap_action: !include ../popups/tablet/heating.yaml
+
+              - type: custom:button-card
+                template:
+                  - sensor
+                  - heat_pump_starts
+
+              - type: custom:button-card
+                template:
+                  - info
+                  - hot_water_pump
+
+              - type: custom:button-card
+                template: sensor
+                entity: sensor.nibe_daily_brine_min_input_temp
+                name: Matalin keruu
+                variables:
+                  icon_color: |
+                    [[[
+                      var color = "red";
+                      var current_temp = entity.state;
+                      if (current_temp < -0.6) {
+                        color = "blue";
+                      } else if (current_temp < -0.3) {
+                        color = "dodgerblue";
+                      } else if (current_temp < 0.0) {
+                        color = "yellow";
+                      } else {
+                        color = "green";
+                      }
+
+                      return color;
+                    ]]]
+
+      ###
+      ### Devices
+      ###
+
+      - type: vertical-stack
+        view_layout:
+          grid-area: "devices"
+        cards:
+          - type: "custom:button-card"
+            template: group_title
+            name: Kodinhoito
+
+          - type: grid
+            columns: 2
+            cards:
+              - type: "custom:button-card"
+                template: info
+                entity: vacuum.roborock_s6_pure
+                name: Robotti-imuri
+                tap_action: !include ../popups/tablet/vacuum.yaml
+                variables:
+                  icon_glow: true
+                  state_colors:
+                    "cleaning": green
+                    "paused": yellow
+                    "returning": dodgerblue
+                    "error": var(--color-warning)
+
+              - type: "custom:button-card"
+                template:
+                  - info
+                  - laundry
+                tap_action: !include ../popups/tablet/laundry.yaml
+
+              - type: "custom:button-card"
+                template:
+                  - info
+                  - networking
+                tap_action: !include ../popups/tablet/networking.yaml
+
+              - type: "custom:button-card"
+                template:
+                  - info
+                  - tasks
+                tap_action: !include ../popups/common/todoist-tasks.yaml
+
+      ###
+      ### Family
+      ###
+
+      - type: vertical-stack
+        view_layout:
+          grid-area: "family"
+        cards:
+          - type: "custom:button-card"
+            template: group_title
+            name: Perhe
+            tap_action: !include ../popups/common/family-map.yaml
+
+          - type: grid
+            columns: 2
+            cards:
+              - type: "custom:button-card"
+                template: user
+                entity: person.tero
+                variables:
+                  battery_charge_entity: sensor.tero_battery_level
+                  battery_charging_status_entity: sensor.tero_battery_state
+                  wifi_ssid_entity: sensor.tero_ssid
+
+              - type: "custom:button-card"
+                template: user
+                entity: person.pia
+                variables:
+                  battery_charge_entity: sensor.pia_akun_varaustaso
+                  battery_charging_status_entity: binary_sensor.pia_latautuu
+                  wifi_ssid_entity: sensor.pia_wifi_connection
+
+              - type: "custom:button-card"
+                template: user
+                entity: person.otso
+                variables:
+                  battery_charge_entity: sensor.otso_battery_level
+                  battery_charging_status_entity: sensor.otso_battery_state
+                  wifi_ssid_entity: sensor.otso_ssid
+
+              - type: "custom:button-card"
+                template: user
+                entity: person.sisu
+                variables:
+                  battery_charge_entity: sensor.sisu_battery_level
+                  battery_charging_status_entity: sensor.sisu_battery_state
+                  wifi_ssid_entity: sensor.sisu_wifi_connection
+
+      ###
+      ### Children
+      ###
+
+      - type: vertical-stack
+        view_layout:
+          grid-area: "children"
+        cards:
+          - type: "custom:button-card"
+            template: group_title
+            name: Lasten huoneet
+
+          - type: grid
+            columns: 2
+            cards:
+              - type: "custom:button-card"
+                template: new_light
+                entity: light.group_otsos_room
+                variables:
+                  name: Otson huone
+                  tap_action:
+                    action: more-info
+
+              - type: "custom:button-card"
+                template: new_light
+                entity: light.group_sisus_room
+                variables:
+                  name: Sisun huone
+                  tap_action:
+                    action: more-info
+
+              - type: "custom:button-card"
+                template:
+                  - sensor_graph
+                  - sensor_graph_thresholds_indoor_temperature
+                entity: sensor.mqtt_otso_temperature
+                variables:
+                  name_override: Lämpötila
+
+              - type: "custom:button-card"
+                template:
+                  - sensor_graph
+                  - sensor_graph_thresholds_indoor_temperature
+                entity: sensor.mqtt_airthings_waveplus_sisu_temperature
+                variables:
+                  name_override: Lämpötila
+
+      ###
+      ### Footer
+      ###
+
+      - type: "custom:button-card"
+        view_layout:
+          grid-area: "footer"
+          place-self: "start center"
+        template: footer_info
+        show_name: false
+        icon: mdi:emoticon-happy-outline
+        entity: sensor.zen_quote
+        styles:
+          state:
+            - font-style: italic
