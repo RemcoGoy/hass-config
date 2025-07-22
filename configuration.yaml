@@ -95,24 +95,24 @@ weather:
   - platform: template
     name: "Weather"
     unique_id: home_custom
-    condition_template: "{{ states('weather.koti') }}"
-    temperature_template: "{{ states('sensor.netatmo_outdoor_temperature') | float }}"
-    humidity_template: "{{ state_attr('weather.koti', 'humidity') | float }}"
-    pressure_template: "{{ state_attr('weather.koti', 'pressure') }}"
-    wind_speed_template: "{{ state_attr('weather.koti', 'wind_speed') }}"
-    wind_bearing_template: "{{ state_attr('weather.koti', 'wind_bearing') }}"
-    ozone_template: "{{ state_attr('weather.koti', 'ozone') }}"
-    visibility_template: "{{ state_attr('weather.koti', 'visibility') }}"
+    condition_template: "{{ states('weather.home') }}"
+    temperature_template: "{{ state_attr('weather.home', 'temperature') | float }}"
+    humidity_template: "{{ state_attr('weather.home', 'humidity') | float }}"
+    pressure_template: "{{ state_attr('weather.home', 'pressure') }}"
+    wind_speed_template: "{{ state_attr('weather.home', 'wind_speed') }}"
+    wind_bearing_template: "{{ state_attr('weather.home', 'wind_bearing') }}"
+    ozone_template: "{{ state_attr('weather.home', 'ozone') }}"
+    visibility_template: "{{ state_attr('weather.home', 'visibility') }}"
 
 input_select:
   home_state:
-    name: "Tila"
+    name: "Status"
     icon: mdi:home
     options:
-      - Kotona
-      - Poissa
-      - Nukkumassa
-    initial: Kotona
+      - At home
+      - Away
+      - Sleeping
+    initial: At home
   sauna_state:
     name: "Saunan tila"
     icon: mdi:shower

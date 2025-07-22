@@ -1,4 +1,4 @@
-- name: Nukkumassa
+- name: Sleeping
   entities:
     light.sisun_poytalamppu:
       state: "on"

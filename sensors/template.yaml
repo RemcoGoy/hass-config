@@ -1,6 +1,6 @@
 - trigger:
     - platform: state
-      entity_id: weather.koti
+      entity_id: weather.home
     - platform: event
       event_type: event_template_reloaded
   action:
@@ -8,14 +8,14 @@
       data:
         type: daily
       target:
-        entity_id: weather.koti
+        entity_id: weather.home
       response_variable: daily_forecasts
   sensor:
-    - name: Päivän sääennuste
+    - name: Today's weather forecast
       unique_id: weather_forecast_today
       state: "{{ now().isoformat() }}"
       attributes:
-        forecast: "{{ daily_forecasts['weather.koti'].forecast[0] }}"
+        forecast: "{{ daily_forecasts['weather.home'].forecast[0] }}"
 
 - sensor:
     - name: "Radonin tila"
@@ -623,7 +623,7 @@
             Ennuste {{ forecast.precipitation }} mm. Todennäköisyys {{ forecast.precipitation_probability }} %
           {% endif %}
         tap_action: more-info
-        tap_action_entity: weather.koti
+        tap_action_entity: weather.home
 
     - name: "notification_synology_update_available"
       unique_id: "notification_synology_update_available"

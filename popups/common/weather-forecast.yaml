@@ -30,7 +30,7 @@ browser_mod:
           view_layout:
             grid-area: weather
           card_mod: !include ../../ui/styles/no-card.yaml
-          entity: weather.koti
+          entity: weather.home
           temp: sensor.netatmo_outdoor_temperature
           icons: /local/img/weather/
           units:

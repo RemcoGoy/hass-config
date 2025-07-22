@@ -53,8 +53,8 @@ browser_mod:
           show_header_toggle: false
           entities:
             - entity: input_boolean.automations_enabled
-            - entity: automation.aseta_poissa_tila
-            - entity: automation.kotona
+            - entity: automation.aseta_Away_tila
+            - entity: automation.At home
             - entity: automation.liike_eteisessa
             - entity: automation.aloita_iltarutiinit
             - entity: automation.start_go_to_sleep

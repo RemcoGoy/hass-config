@@ -1,7 +1,7 @@
 base:
   variables:
     is_active: |
-      [[[ return ['on', 'open', 'Kotona', 'home', 'cleaning', 'returning', 'idle'].indexOf(entity === undefined || entity.state) !== -1; ]]]
+      [[[ return ['on', 'open', 'At home', 'home', 'cleaning', 'returning', 'idle'].indexOf(entity === undefined || entity.state) !== -1; ]]]
   template:
     - language_variables
   # Fix to https://github.com/home-assistant/core/issues/90957

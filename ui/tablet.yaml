@@ -40,9 +40,9 @@ views:
             template: clock
             entity: sensor.time
             variables:
-              entity_weather: weather.koti
+              entity_weather: weather.home
               entity_date: sensor.date
-              entity_temperature: sensor.netatmo_outdoor_temperature
+              entity_temperature: sensor.outside_temperature
               weather_tap_action: !include ../popups/common/weather-forecast.yaml
 
           - type: vertical-stack
