@@ -1,0 +1,11 @@
+- platform: group
+  name: Group devices
+  unique_id: group_devices
+  entities:
+    - binary_sensor.ps5_status
+    - binary_sensor.nintendo_switch_status
+    - binary_sensor.lg_65_c1
+    - binary_sensor.samsung_q90_series_65
+    - binary_sensor.notification_vacuuming
+    - binary_sensor.notification_washing_machine
+    - binary_sensor.notification_tumble_dryer

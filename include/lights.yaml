@@ -1,0 +1,169 @@
+- platform: group
+  name: group_office
+  entities:
+    - light.tyohuone_nauha
+    - light.tyohuone_poytalamppu
+
+- platform: group
+  name: group_kitchen
+  entities:
+    - light.keittio_nauha_1
+    - light.keittio_nauha_2
+    - light.keittio_ohio_1
+    - light.keittio_ohio_2
+    - light.keittio_ohio_3
+
+- platform: group
+  name: group_living_room
+  entities:
+    - light.olohuone_nauha
+    - light.olohuone_oikea_yla
+    - light.olohuone_oikea_ala
+    - light.olohuone_vasen_yla
+    - light.olohuone_vasen_ala
+
+- platform: group
+  name: group_bedroom
+  entities:
+    - light.makuuhuone_nauha
+    - light.lundia_jalkalamppu
+
+- platform: group
+  name: group_entrance
+  entities:
+    - light.eteinen_oikea_yla
+    - light.eteinen_oikea_ala
+    - light.eteinen_vasen_yla
+    - light.eteinen_vasen_ala
+    - light.eteinen_poytalamppu
+
+- platform: group
+  name: group_otsos_room
+  entities:
+    - light.otson_katto
+    - light.otson_poytalamppu
+
+- platform: group
+  name: group_sisus_room
+  entities:
+    - light.sisun_katto
+    - light.sisun_poytalamppu
+
+- platform: group
+  name: group_kitchen_living_room
+  entities:
+    - light.keittio_nauha_1
+    - light.keittio_nauha_2
+    - light.keittio_ohio_1
+    - light.keittio_ohio_2
+    - light.keittio_ohio_3
+    - light.olohuone_nauha
+    - light.olohuone_oikea_yla
+    - light.olohuone_oikea_ala
+    - light.olohuone_vasen_yla
+    - light.olohuone_vasen_ala
+
+- platform: group
+  name: group_side_yard
+  entities:
+    - light.side_yard_1_down
+    - light.side_yard_1_up
+    - light.side_yard_2_down
+    - light.side_yard_2_up
+    - light.side_yard_3_down
+    - light.side_yard_3_up
+    - light.side_yard_4_down
+    - light.side_yard_4_up
+    - light.side_yard_5_down
+    - light.side_yard_5_up
+
+- platform: group
+  name: group_front_yard
+  entities:
+    - light.front_yard_bollard_1
+    - light.front_yard_bollard_2
+
+- platform: group
+  name: group_backyard
+  entities:
+    - light.backyard_1_down
+    - light.backyard_1_up
+    - light.backyard_2_down
+    - light.backyard_2_up
+    - light.backyard_3_down
+    - light.backyard_3_up
+    - light.backyard_4_down
+    - light.backyard_4_up
+    - light.backyard_bollard_1
+    - light.backyard_bollard_2
+
+- platform: group
+  name: group_terrace
+  entities:
+    - light.backyard_bollard_1
+    - light.backyard_bollard_2
+    - light.backyard_4_down
+    - light.backyard_4_up
+
+- platform: group
+  name: group_outdoor
+  entities:
+    - light.group_front_yard
+    - light.group_backyard
+    - light.group_side_yard
+    - light.group_terrace
+
+- platform: group
+  name: group_all_flat
+  entities:
+    - light.tyohuone_nauha
+    - light.tyohuone_poytalamppu
+    - light.tyohuone_katto
+    - light.keittio_nauha_1
+    - light.keittio_nauha_2
+    - light.keittio_ohio_1
+    - light.keittio_ohio_2
+    - light.keittio_ohio_3
+    - light.olohuone_nauha
+    - light.olohuone_oikea_yla
+    - light.olohuone_oikea_ala
+    - light.olohuone_vasen_yla
+    - light.olohuone_vasen_ala
+    - light.makuuhuone_nauha
+    - light.lundia_jalkalamppu
+    - light.eteinen_oikea_yla
+    - light.eteinen_oikea_ala
+    - light.eteinen_vasen_yla
+    - light.eteinen_vasen_ala
+    - light.otson_poytalamppu
+    - light.otson_katto
+    - light.sisun_katto
+    - light.sisun_poytalamppu
+    - light.siemens_cooker_hood
+
+# Group of groups
+
+- platform: group
+  name: group_living_areas
+  entities:
+    - light.group_living_room
+    - light.group_kitchen
+    - light.group_entrance
+
+- platform: group
+  name: group_kids_rooms
+  entities:
+    - light.group_otsos_room
+    - light.group_sisus_room
+
+- platform: group
+  name: group_all
+  entities:
+    - light.group_living_room
+    - light.group_otsos_room
+    - light.group_sisus_room
+    - light.group_kitchen
+    - light.group_entrance
+    - light.group_office
+    - light.group_bedroom
+    - light.siemens_cooker_hood

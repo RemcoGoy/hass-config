@@ -1,0 +1,278 @@
+lights_off_indoor:
+  alias: Sammuta valot sisällä
+  mode: single
+  sequence:
+    - service: scene.create
+      data:
+        scene_id: snapshot_before_lights_off_indoor
+        snapshot_entities: |
+          {{ expand(state_attr('light.group_all', 'entity_id')) | map(attribute='entity_id') | list + ['switch.tplink_hs100_3'] }}
+    - service: light.turn_off
+      data: {}
+      target:
+        entity_id: light.group_all
+    - service: switch.turn_off
+      data: {}
+      target:
+        entity_id: switch.tplink_hs100_3
+
+lights_restore_indoor:
+  alias: Palauta valojen tila sisällä
+  mode: single
+  sequence:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.snapshot_before_lights_off_indoor
+
+lights_toggle_indoors:
+  alias: Kytke valot sisällä
+  mode: single
+  sequence:
+    - service: script.turn_on
+      target:
+        entity_id: |
+          {% if is_state('light.group_all', 'on') %}
+            script.lights_off_indoor
+          {% else %}
+            script.lights_restore_indoor
+          {% endif %}
+
+scene_santa_is_coming:
+  alias: Joulupukki tulee flash
+  sequence:
+    - delay:
+        hours: 0
+        minutes: 0 # 1
+        seconds: 1
+        milliseconds: 0
+    - service: media_player.turn_off
+      target:
+        entity_id: media_player.samsung_q90_series_65
+    - service: light.turn_off
+      target:
+        entity_id: light.group_office
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 1
+        milliseconds: 0
+    - service: light.turn_on
+      data:
+        color_name: red
+        brightness_pct: 100
+        flash: long
+      target:
+        entity_id:
+          - light.group_office
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 5
+        milliseconds: 0
+    - service: light.turn_on
+      target:
+        entity_id: light.group_all
+      data:
+        brightness_step_pct: 75
+        kelvin: 4000
+        flash: short
+    - service: media_player.turn_on
+      target:
+        entity_id: media_player.samsung_q90_series_65
+  mode: single
+
+scene_evening_routines:
+  sequence:
+    - service: light.turn_on
+      data_template:
+        entity_id:
+          "{% set lights = ['light.tyohuone', 'light.eteinen', 'light.otson_huone',
+          'light.sisun_huone', 'light.olohuone', 'light.keittio', 'light.makuuhuone']
+          %}   {{ expand(lights) | selectattr('state', 'eq', 'on') | map(attribute='entity_id')
+          | join(',') }}
+
+          "
+        brightness_pct: 40
+        color_temp: 346
+  mode: single
+  alias: Iltarutiinit
+  icon: mdi:sleep
+scene_day_lights:
+  sequence:
+    - service: light.turn_on
+      data_template:
+        entity_id:
+          "{% set lights = ['light.olohuone', 'light.keittio', 'light.eteinen',
+          'light.makuuhuone', 'light.otson_huone', 'light.sisun_huone', 'light.tyohuone']
+          %}   {{ expand(lights) | selectattr('state', 'eq', 'on') | map(attribute='entity_id')
+          | join(',') }}
+
+          "
+        brightness_pct: 100
+        kelvin: 4200
+  mode: single
+  alias: Päivävalot
+  icon: mdi:sun-compass
+scene_kids_go_to_sleep:
+  sequence:
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.otson_huone
+      data:
+        rgb_color:
+          - 0
+          - 255
+          - 66
+        brightness_pct: 80
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.sisun_huone
+      data:
+        rgb_color:
+          - 0
+          - 255
+          - 66
+        brightness_pct: 80
+  mode: single
+  icon: mdi:baby-face
+  alias: Pojat nukkuu
+
+scene_parameterized_color_rgb:
+  mode: single
+  alias: Parametrisoitu valoasetus, rgb
+  icon: mdi:lightbulb-auto
+  sequence:
+    - service: light.turn_on
+      data_template:
+        entity_id: |
+          {{ expand(state_attr(entity, 'entity_id')) | selectattr('state', 'eq', 'on') | map(attribute='entity_id') | list }}
+        brightness_pct: "{{ brightness }}"
+        rgb_color: "{{ color_rgb }}"
+
+scene_parameterized_color_temperature:
+  mode: single
+  alias: Parametrisoitu valoasetus, kelvin
+  icon: mdi:lightbulb-auto
+  sequence:
+    - service: light.turn_on
+      data_template:
+        entity_id: |
+          {{ expand(state_attr(entity, 'entity_id')) | selectattr('state', 'eq', 'on') | map(attribute='entity_id') | list }}
+        brightness_pct: "{{ brightness }}"
+        kelvin: "{{ color_temperature }}"
+
+scene_parameterized_brightness:
+  mode: single
+  alias: Parametrisoitu valoasetus, kirkkaus
+  icon: mdi:lightbulb-auto
+  sequence:
+    - service: light.turn_on
+      data_template:
+        entity_id: |
+          {{ expand(state_attr(entity, 'entity_id')) | selectattr('state', 'eq', 'on') | map(attribute='entity_id') | list }}
+        brightness_pct: "{{ brightness }}"
+
+todoist_create_new_task:
+  mode: single
+  alias: Todoist create new task
+  sequence:
+    - service: rest_command.todoist_create_task
+      data:
+        content: "{{ states('input_text.todoist_new_task_title') }}"
+        description: "{{ states('input_text.todoist_new_task_description') }}"
+        project_id: !secret todoist_home_project_id
+    - service: input_text.set_value
+      data_template:
+        entity_id:
+          - input_text.todoist_new_task_title
+          - input_text.todoist_new_task_description
+        value: ""
+    - service: homeassistant.update_entity
+      entity_id: sensor.todoist_all_tasks
+
+todoist_delete_task:
+  mode: single
+  alias: Todoist delete task
+  sequence:
+    - service: rest_command.todoist_delete_task
+      data:
+        task_id: "{{ task_id }}"
+    - service: homeassistant.update_entity
+      entity_id: sensor.todoist_all_tasks
+
+todoist_complete_task:
+  mode: single
+  alias: Todoist complete task
+  sequence:
+    - service: rest_command.todoist_complete_task
+      data:
+        task_id: "{{ task_id }}"
+    - service: homeassistant.update_entity
+      entity_id: sensor.todoist_all_tasks
+
+scene_santa_is_coming_2023:
+  alias: Joulupukki tulee flash 2023
+  mode: single
+  sequence:
+    - delay:
+        hours: 0
+        minutes: 1
+        seconds: 0
+        milliseconds: 0
+    - service: media_player.turn_off
+      target:
+        entity_id: media_player.samsung_q90_series_65
+    - service: light.turn_on
+      target:
+        entity_id: light.group_all
+      data:
+        color_name: red
+        brightness_pct: 100
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 1
+        milliseconds: 0
+    - repeat:
+        count: 10
+        sequence:
+          - service: light.toggle
+            data: {}
+            target:
+              entity_id: light.group_all
+          - service: light.toggle
+            data: {}
+            target:
+              entity_id: light.hue_smart_plug_1
+          - delay:
+              hours: 0
+              minutes: 0
+              seconds: 1
+              milliseconds: 0
+          - service: light.toggle
+            data: {}
+            target:
+              entity_id: light.group_all
+          - service: light.toggle
+            data: {}
+            target:
+              entity_id: light.hue_smart_plug_1
+          - delay:
+              hours: 0
+              minutes: 0
+              seconds: 1
+              milliseconds: 0
+    - service: light.turn_on
+      target:
+        entity_id: light.group_all
+      data:
+        brightness_step_pct: 75
+        kelvin: 4000
+    - service: light.turn_on
+      target:
+        entity_id: light.hue_smart_plug_1
+    # - service: media_player.turn_on
+    #   target:
+    #     entity_id: media_player.samsung_q90_series_65

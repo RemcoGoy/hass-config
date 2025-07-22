@@ -1,0 +1,62 @@
+- name: Nukkumassa
+  entities:
+    light.sisun_poytalamppu:
+      state: "on"
+      brightness: 51
+      color_mode: yellow
+    light.sisun_katto:
+      state: "off"
+    light.group_entrance:
+      state: "off"
+    light.group_otsos_room:
+      state: "off"
+    light.group_office:
+      state: "off"
+    light.group_kitchen:
+      state: "off"
+    light.group_living_room:
+      state: "off"
+    light.group_bedroom:
+      state: "off"
+
+- name: Herätys
+  entities:
+    light.group_bedroom:
+      state: "on"
+      brightness: 190
+      color_temp: 233
+    light.group_otsos_room:
+      state: "on"
+      brightness: 190
+      color_temp: 233
+    light.group_sisus_room:
+      state: "on"
+      brightness: 190
+      color_temp: 233
+
+- name: Hereillä
+  entities:
+    light.group_living_room:
+      state: "on"
+      brightness: 150
+      color_temp: 346
+    light.group_entrance:
+      state: "on"
+      brightness: 150
+      color_temp: 346
+
+- name: Liike yöllä
+  entities:
+    light.group_entrance:
+      state: "on"
+      brightness: 13
+    light.group_living_room:
+      state: "on"
+      brightness: 13
+
+- name: Takaisin nukkumaan
+  entities:
+    light.group_entrance:
+      state: "off"
+    light.group_living_room:
+      state: "off"
