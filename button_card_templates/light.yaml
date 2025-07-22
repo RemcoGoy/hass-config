@@ -1,0 +1,559 @@
+---
+new_light:
+  template:
+    - base_card
+  variables:
+    brightness: |
+      [[[
+        if (entity.attributes.brightness) {
+          return Math.round(entity.attributes.brightness / 2.54)
+        } else {
+          return undefined
+        }
+      ]]]
+    opacity: |
+      [[[
+        var brightness = Math.round(entity.attributes.brightness / 2.54);
+        return brightness < 15 ? 0.15 : brightness / 100;
+      ]]]
+    light_color: |
+      [[[
+        var color = entity.attributes.rgb_color;
+        var brightness = Math.round(entity.attributes.brightness / 2.54);
+        var opacity = brightness < 15 ? 0.2 : brightness / 100;
+
+        if (color) {
+          return 'rgba(' + color + ',' + opacity + ')'
+        }
+
+        return 'var(--button-card-light-color)'
+      ]]]
+    state_colors:
+      "on": |
+        [[[
+          var color = entity.attributes.rgb_color;
+          var brightness = Math.round(entity.attributes.brightness / 2.54);
+          var opacity = brightness < 15 ? 0.2 : brightness / 100;
+
+          if (color) {
+            return 'rgba(' + color + ',' + opacity + ')'
+          }
+
+          return 'var(--button-card-light-color)'
+        ]]]
+    card_glow: true
+    icon_glow: false
+    tap_action:
+      action: |
+        [[[
+          return entity.state === 'on' ? "more-info" : "toggle"
+        ]]]
+    double_tap_action:
+      action: toggle
+    hold_action: !include ../popups/common/light.yaml
+  show_state: false
+  show_name: false
+  show_icon: false
+  show_label: false
+  aspect_ratio: 1/1
+  custom_fields:
+    light_card:
+      card:
+        type: "custom:mushroom-light-card"
+        entity: "[[[ return entity.entity_id ]]]"
+        name: "[[[ return variables.name ]]]"
+        fill_container: true
+        primary_info: "name"
+        secondary_info: "state"
+        icon_type: "icon"
+        show_brightness_control: true
+        use_light_color: true
+        show_color_temp_control: true
+        show_color_control: false
+        collapsible_controls: false
+        layout: vertical
+        tap_action: "[[[ return variables.tap_action ]]]"
+        double_tap_action: "[[[ return variables.double_tap_action ]]]"
+        hold_action: "[[[ return variables.hold_action ]]]"
+        card_mod:
+          style:
+            mushroom-state-item$: |
+              .container.vertical {
+                align-items: flex-start;
+                gap: 0;
+              }
+              .container {
+                padding: 0;
+              }
+              div.icon {
+                margin-bottom: 0.5rem !important;
+              }
+              .actions {
+                --mush-spacing: 0.2rem;
+              }
+              div.container {
+                padding: 0;
+              }
+            mushroom-shape-icon$: |
+              div.shape.disabled {
+                background-color: var(--custom-color-icon-background);
+              }
+              .shape.disabled ha-icon {
+                --icon-color-disabled: var(--custom-icon-color-not-active);
+              }
+              .shape ha-icon {
+                --icon-symbol-size: 1.6rem
+              }
+            mushroom-state-info$: |
+              div.container span {
+                text-align: start;
+              }
+              .secondary {
+                filter: opacity(40%);
+              }
+            .: |
+              ha-card {
+                padding: var(--button-card-padding) !important;
+                background: none;
+                box-shadow: none;
+                --layout-align: flex-start;
+                --icon-size: 2.5rem;
+                --card-primary-font-size: 1rem;
+                --card-primary-font-weight: 500;
+                --card-primary-line-height: normal;
+                --card-secondary-font-size: 0.9rem;
+                --card-secondary-font-weight: 500;
+                --secondary-text-color: var(--primary-text-color);
+                --card-secondary-line-height: normal;
+                --control-height: 2rem;
+              }
+
+              mushroom-state-item {
+                margin-bottom: 0.5rem;
+              }
+              div.actions {
+                --spacing: 0.3rem;
+                padding: 0;
+              }
+
+  styles:
+    grid:
+      - grid-template-areas: |
+          "light_card"
+      - grid-template-columns: 1fr
+      - grid-template-rows: 1fr
+    card:
+      - padding: 0
+    custom_fields:
+      light_card:
+        - align-self: start start
+        - width: 100%
+        - height: 100%
+  extra_styles: |
+    ha-card {
+      height: 100% !important;
+    }
+
+new_compact_light:
+  template:
+    - new_light
+  aspect_ratio: null
+  styles:
+    card:
+      - height: var(--button-card-compact-height)
+  custom_fields:
+    light_card:
+      card:
+        layout: default
+        card_mod:
+          style:
+            mushroom-state-item$: |
+              .container.vertical {
+                align-items: flex-start;
+              }
+              div.icon {
+                margin-bottom: 0 !important;
+              }
+              div.container {
+                padding: 0;
+              }
+              .actions {
+                --mush-spacing: 0.2rem;
+              }
+
+light_no_action:
+  variables:
+    popup_show_colorwheel: true
+    popup_show_predefined_colors: false
+    brightness: |
+      [[[
+        if (entity.attributes.brightness) {
+          return Math.round(entity.attributes.brightness / 2.54)
+        } else {
+          return undefined
+        }
+      ]]]
+    opacity: |
+      [[[
+        var brightness = Math.round(entity.attributes.brightness / 2.54);
+        return brightness < 15 ? 0.15 : brightness / 100;
+      ]]]
+    light_color: |
+      [[[
+        var color = entity.attributes.rgb_color;
+        var brightness = Math.round(entity.attributes.brightness / 2.54);
+        var opacity = brightness < 15 ? 0.2 : brightness / 100;
+
+        if (color) {
+          return 'rgba(' + color + ',' + opacity + ')'
+        }
+
+        return 'var(--button-card-light-color)'
+      ]]]
+    state_colors:
+      "on": |
+        [[[
+          var color = entity.attributes.rgb_color;
+          var brightness = Math.round(entity.attributes.brightness / 2.54);
+          var opacity = brightness < 15 ? 0.2 : brightness / 100;
+
+          if (color) {
+            return 'rgba(' + color + ',' + opacity + ')'
+          }
+
+          return 'var(--button-card-light-color)'
+        ]]]
+    card_glow: true
+    icon_glow: false
+  show_last_changed: false
+  show_state: false
+  template:
+    - base
+    - info
+  double_tap_action:
+    action: toggle
+  custom_fields:
+    brightness: |
+      [[[
+        if (variables.is_active && entity.attributes.supported_features > 0) {
+          return variables.brightness ? `${variables.brightness} %` : ''
+        } else if (variables.is_active) {
+          return 'Päällä'
+        }
+        return 'Pois'
+      ]]]
+    slider:
+      card:
+        type: custom:light-slider-card
+        entity: "[[[ return entity.entity_id ]]]"
+        styles:
+          slider:
+            - height: 1.8rem
+          card:
+            - height: 1.8rem
+            - box-shadow: none
+
+    toggle:
+      card:
+        type: custom:button-card
+        template:
+          - base
+        show_icon: false
+        show_name: false
+        show_state: true
+        tap_action:
+          action: toggle
+        entity: |
+          [[[ return entity.entity_id ]]]
+        state_display: |
+          [[[
+            return `<div class="switch"><input type="checkbox" ${entity.state === 'on' ? 'checked' : ''}><span class="slider round"></span></div>`
+          ]]]
+        extra_styles: |
+          [[[
+            var slider_background_color = 'rgba(var(--color-theme-rgb),0.05)'
+            var toggle_color = 'rgba(var(--color-theme-rgb),0.4)'
+            if (entity.state == "on") {
+              slider_background_color = 'rgba(' + entity.attributes.rgb_color + ',' + variables.opacity * 0.5 + ')'
+              toggle_color = 'white'
+            }
+
+            return `
+              .switch {
+                position: relative;
+                display: inline-block;
+                width: 2.5rem;
+                height: 1.5rem;
+              }
+
+              .switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+              }
+
+              .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(var(--color-theme-rgb),0.05);
+                -webkit-transition: .4s;
+                transition: .4s;
+                border-radius: 2rem;
+              }
+
+              .slider:before {
+                position: absolute;
+                content: "";
+                width: 1.2rem;
+                height: 1.2rem;
+                left: 0.2rem;
+                bottom: 0.15rem;
+                background-color: ${toggle_color};
+                -webkit-transition: .4s;
+                transition: .4s;
+                border-radius: 50%;
+              }
+
+              input:checked + .slider {
+                background-color: ${variables.light_color};
+              }
+
+              input:focus + .slider {
+                box-shadow: 0 0 1px ${variables.light_color};
+              }
+
+              input:checked + .slider:before {
+                -webkit-transform: translateX(0.95rem);
+                -ms-transform: translateX(0.95rem);
+                transform: translateX(0.95rem);
+              }
+              `
+          ]]]
+        styles:
+          card:
+            - box-shadow: none
+            - height: 3rem
+            - width: 2.5rem
+
+  styles:
+    grid:
+      - grid-template-areas: |
+          "i toggle"
+          "n n"
+          "brightness brightness"
+          "slider slider"
+      - grid-template-columns: 2.5rem 3.5fr
+      - grid-template-rows: 2.5rem 1.25fr 0.75fr 1.5fr
+    icon:
+      - transition: all 2s ease
+    img_cell:
+      - transition: all 2s ease
+    name:
+      - align-self: end
+    custom_fields:
+      brightness:
+        - align-self: start
+        - justify-self: start
+        - filter: "opacity(40%)"
+        - font-size: 0.9rem
+      slider:
+        - align-self: end
+        - display: |
+            [[[
+              return entity.attributes.supported_features > 0 ? 'block' : 'none'
+            ]]]
+      toggle:
+        - align-self: center
+        - justify-self: end
+
+light:
+  template:
+    - light_no_action
+  tap_action:
+    action: more-info
+  hold_action: !include ../popups/common/light.yaml
+
+light_wide:
+  template:
+    - light
+    - wide_card
+  styles:
+    grid:
+      - grid-template-areas: |
+          "i n"
+          "i brightness"
+          "slider slider"
+      - grid-template-columns: 2.5rem 3.5fr
+      - grid-template-rows: 2.5rem 1.5fr 2fr
+
+compact_light:
+  template:
+    - light
+    - compact_card
+  custom_fields:
+    slider:
+      card:
+        type: custom:light-slider-card
+        entity: "[[[ return entity.entity_id ]]]"
+        styles:
+          slider:
+            - height: 2.0rem
+          card:
+            - height: 2.0rem
+            - box-shadow: none
+  styles:
+    grid:
+      - grid-template-areas: |
+          "i n toggle"
+          "i brightness toggle"
+          "slider slider slider"
+      - grid-template-columns: 2.5rem 2fr 1.5fr
+      - grid-template-rows: 1.25rem 1.25rem 2fr
+    name:
+      - padding-left: 0.8rem
+      - align-self: end
+    custom_fields:
+      brightness:
+        - padding-left: 0.8rem
+        - align-self: end
+        - justify-self: start
+
+compact_light_custom_actions:
+  template:
+    - compact_light
+  tap_action: false
+
+run_scene:
+  template:
+    - "base_card"
+    - "base_icon_name"
+  variables:
+    icon_glow: true
+  tap_action:
+    action: toggle
+  styles:
+    grid:
+      - grid-template-areas: |
+          ". i ."
+          "n n n"
+      - grid-template-columns: 1fr 2.5rem 1fr
+      - grid-template-rows: 2.5rem 1fr
+    img_cell:
+      - justify-self: center
+    name:
+      - place-self: end center
+
+scene_icon:
+  template:
+    - base
+  variables:
+    brightness: 100
+    color_rgb: false
+  show_name: true
+  show_label: false
+  show_state: false
+  show_icon: true
+  styles:
+    img_cell:
+      - width: 3rem
+      - height: 3rem
+      - background-color: |
+          [[[
+            if (variables.color_rgb) {
+              return `rgb(${variables.color_rgb})`
+            } else if (variables.is_active) {
+              return `rgb(${entity.attributes.rgb_color})`
+            }
+
+            return 'var(--custom-icon-color-not-active)'
+          ]]]
+      - border-radius: 50%
+      - filter: "[[[ return `opacity(${variables.brightness}%)` ]]]"
+      - "-webkit-box-shadow": |
+          [[[
+            var shadow_color = 'var(--custom-icon-color-not-active)'
+            if (variables.color_rgb) {
+              shadow_color = `rgb(${variables.color_rgb})`
+            } else if (variables.is_active) {
+              shadow_color = `rgb(${entity.attributes.rgb_color})`
+            }
+
+            return `0 0 0.5rem 0.3rem ${shadow_color}`
+          ]]]
+      - box-shadow: |
+          [[[
+            var shadow_color = 'var(--custom-icon-color-not-active)'
+            if (variables.color_rgb) {
+              shadow_color = `rgb(${variables.color_rgb})`
+            } else if (variables.is_active) {
+              shadow_color = `rgb(${entity.attributes.rgb_color})`
+            }
+
+            return `0 0 0.5rem 0.3rem ${shadow_color}`
+          ]]]
+    icon:
+      - width: 0
+      - height: 0
+    grid:
+      - grid-template-areas: |
+          "i"
+          "n"
+      - grid-template-rows: 4rem 1.5rem
+    name:
+      - padding-top: 0.8rem
+      - font-size: 1rem
+    card:
+      - width: 6rem
+      - height: 6.1rem
+      - box-shadow: none
+      - background-color: transparent
+      - border-radius: 0%
+      - margin: 0 0 0 0
+
+scene_icon_rgb:
+  template:
+    - scene_icon
+  variables:
+    color_rgb: 255, 255, 255
+  tap_action:
+    action: |
+      [[[ return variables.is_active ? 'call-service' : 'none' ]]]
+    service: script.scene_parameterized_color_rgb
+    data:
+      entity: "[[[ return entity.entity_id ]]]"
+      color_rgb: "[[[ return variables.color_rgb ]]]"
+      brightness: "[[[ return variables.brightness ]]]"
+
+scene_icon_temperature:
+  template:
+    - scene_icon
+  variables:
+    color_temperature: 2800
+  tap_action:
+    action: |
+      [[[ return variables.is_active ? 'call-service' : 'none' ]]]
+    service: script.scene_parameterized_color_temperature
+    data:
+      entity: "[[[ return entity.entity_id ]]]"
+      color_temperature: "[[[ return variables.color_temperature ]]]"
+      brightness: "[[[ return variables.brightness ]]]"
+
+scene_icon_brightness:
+  template:
+    - scene_icon
+  tap_action:
+    action: |
+      [[[ return variables.is_active ? 'call-service' : 'none' ]]]
+    service: script.scene_parameterized_brightness
+    data:
+      entity: "[[[ return entity.entity_id ]]]"
+      brightness: "[[[ return variables.brightness ]]]"
+
+compact_run_scene:
+  template:
+    - run_scene
+    - compact_card

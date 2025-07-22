@@ -1,0 +1,177 @@
+---
+action: fire-dom-event
+browser_mod:
+  service: browser_mod.popup
+  data:
+    title: Säädä valaistusta
+    style: |
+      --popup-max-width: 40vw;
+      --mdc-dialog-max-height: 90vh;
+    card_mod:
+      style:
+        ha-dialog$: |
+          @media (max-width: 450px), (max-height: 500px) {
+            div.mdc-dialog div.mdc-dialog__container {
+              --mdc-dialog-min-height: 100vh;
+              --mdc-dialog-min-width: 100vw;
+              --mdc-dialog-max-height: 100vh;
+            }
+          }
+        hui-vertical-stack-card:
+          $: |
+            #root {
+              padding: 0 1rem 0 1rem;
+            }
+            button-card {
+              padding: 0 20px 0 20px;
+            }
+            .text-content {
+              text-align: start !important;
+            }
+          $hui-entities-card:
+            $: |
+              ha-card {
+                padding: 0 20px 0 20px;
+                box-shadow: none;
+                background-color: transparent;
+              }
+              div#states.card-content {
+                padding: 0;
+              }
+          $button-card:
+            $hui-horizontal-stack-card:
+              $: |
+                #root {
+                  display: flex;
+                  justify-content: center;
+                }
+            $hui-vertical-stack-card:
+              $hui-horizontal-stack-card:
+                $: |
+                  #root {
+                    display: flex;
+                    justify-content: center;
+                  }
+            $slider-entity-row:
+              $hui-generic-entity-row:
+                $: |
+                  div.text-content {
+                    text-align: start;
+                  }
+    content:
+      type: vertical-stack
+      cards:
+        - type: custom:button-card
+          template: conditional
+          variables:
+            show: |
+              [[[ return entity.attributes.supported_features > 0 ]]]
+            card:
+              type: horizontal-stack
+              cards:
+                - type: custom:button-card
+                  template: scene_icon_temperature
+                  entity: "[[[ return entity.entity_id ]]]"
+                  name: Relax
+                  variables:
+                    color_rgb: 255, 148, 43
+                    color_temperature: 2800
+                    brightness: 60
+
+                - type: custom:button-card
+                  template: scene_icon_temperature
+                  entity: "[[[ return entity.entity_id ]]]"
+                  name: Luku
+                  variables:
+                    color_rgb: 255, 174, 103
+                    color_temperature: 3500
+                    brightness: 100
+
+                - type: custom:button-card
+                  template: scene_icon_temperature
+                  entity: "[[[ return entity.entity_id ]]]"
+                  name: Keskity
+                  variables:
+                    color_rgb: 255, 214, 181
+                    color_temperature: 4200
+                    brightness: 100
+
+                - type: custom:button-card
+                  template: scene_icon_temperature
+                  entity: "[[[ return entity.entity_id ]]]"
+                  name: Viileä
+                  variables:
+                    color_rgb: 255, 252, 247
+                    color_temperature: 6000
+                    brightness: 100
+
+        - type: custom:button-card
+          template: conditional
+          variables:
+            show: |
+              [[[ return entity.attributes.supported_features > 0 ]]]
+            card:
+              type: horizontal-stack
+              cards:
+                - type: custom:button-card
+                  template: scene_icon_brightness
+                  entity: "[[[ return entity.entity_id ]]]"
+                  name: 80%
+                  variables:
+                    brightness: 80
+
+                - type: custom:button-card
+                  template: scene_icon_brightness
+                  entity: "[[[ return entity.entity_id ]]]"
+                  name: 60%
+                  variables:
+                    brightness: 60
+
+                - type: custom:button-card
+                  template: scene_icon_brightness
+                  entity: "[[[ return entity.entity_id ]]]"
+                  name: 40%
+                  variables:
+                    brightness: 40
+
+                - type: custom:button-card
+                  template: scene_icon_brightness
+                  entity: "[[[ return entity.entity_id ]]]"
+                  name: 20%
+                  variables:
+                    brightness: 20
+
+        - type: custom:button-card
+          template: conditional
+          variables:
+            show: |
+              [[[ return Boolean(entity.attributes.entity_id) ]]]
+            card:
+              type: vertical-stack
+              cards: |
+                [[[
+                  const cards = []
+                  const ids = [].concat(entity.attributes.entity_id)
+
+                  for (let i = 0; i < ids.length; i++) {
+                      cards.push({
+                          "type": "custom:mushroom-light-card",
+                          "entity": ids[i],
+                          "fill_container": false,
+                          "primary_info": "name",
+                          "secondary_info": "state",
+                          "icon_type": "icon",
+                          "show_brightness_control": true,
+                          "use_light_color": true,
+                          "show_color_temp_control": true,
+                          "show_color_control": true,
+                          "collapsible_controls": false,
+                          "card_mod": {
+                            "class": "swiper-no-swiping",
+                            "style": "ha-card { margin-bottom: 1rem; text-align: start; box-shadow: none; }",
+                          },
+                      });
+                  }
+
+                  return cards;
+                ]]]

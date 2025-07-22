@@ -1,0 +1,202 @@
+---
+navbar_icon:
+  template:
+    - base
+  variables:
+    active_color: "#00C854"
+    active_view: |
+      [[[
+        var path = window.location.href
+        return path.substring(path.lastIndexOf('/') + 1)
+      ]]]
+  show_icon: false
+  show_name: false
+  show_label: false
+  show_state: true
+  state_display: |
+    [[[
+      var is_active = variables.active_view === variables.id
+      return `<div id=active-menu><ha-icon icon="${variables.icon}" style="--mdc-icon-size: 1.75rem; padding-right: ${is_active ? '0.5rem' : '0'};"></ha-icon>${is_active && variables.text ? `<span class="menu-text">${variables.text}</span>` : ''}</div>`
+    ]]]
+  extra_styles: |
+    span.menu-text {
+      font-size: 1rem;
+    }
+  styles:
+    state:
+      - color: |
+          [[[
+            return variables.active_view === variables.id ? variables.active_color : 'rgba(var(--primary-text-color-rgb), 0.5)'
+          ]]]
+      - filter: |
+          [[[
+            return variables.active_view === variables.id ? `drop-shadow(0 0 0.1rem ${variables.active_color})` : 'none'
+          ]]]
+      - height: 1.75rem
+      - display: inline-block
+      - justify-self: center
+      - align-self: center
+    card:
+      - height: |
+          [[[
+            if (variables.active_view === variables.id && variables.text) {
+              return '3.5rem'
+            } else {
+              return '4rem'
+            }
+          ]]]
+      - width: |
+          [[[
+            if (variables.active_view === variables.id && variables.text) {
+              return undefined
+            } else {
+              return '4rem'
+            }
+          ]]]
+      - padding: 0.5rem 1rem 0.5rem 1rem
+      - display: inline-block
+      - background: |
+          [[[
+            if (variables.active_view === variables.id) {
+              return 'rgba(var(--primary-text-color-rgb), 0.05)'
+            } else {
+              return 'none'
+            }
+          ]]]
+      - border-radius: |
+          [[[
+            if (variables.active_view === variables.id) {
+              return '2rem'
+            } else {
+              return '50%'
+            }
+          ]]]
+      - box-shadow: none
+      - "--mdc-ripple-press-opacity": 0.2
+
+navbar_icon_with_badge:
+  template:
+    - navbar_icon
+  variables:
+    notification:
+      count: 0
+      color: red
+  custom_fields:
+    notification: |
+      [[[
+        return `<span id="notification-count">${variables.notification.count}</span>`
+      ]]]
+  styles:
+    custom_fields:
+      notification:
+        - border-radius: 50%
+        - position: absolute
+        - left: 1.8rem
+        - top: 0.2rem
+        - width: 1.3rem
+        - height: 1.3rem
+        - border: 0.2rem solid var(--card-background-color)
+        - font-size: |
+            [[[
+              return variables.notification.count >= 10 ? '0.8rem' : '1rem'
+            ]]]
+        - font-weight: bold
+        - line-height: 1.4rem
+        - text-align: center
+        - color: white
+        - background-color: |
+            [[[ return variables.notification.color ]]]
+        - display: |
+            [[[ return variables.notification.count > 0 && variables.active_view !== variables.id ? 'block' : 'none' ]]]
+
+mobile_navbar:
+  template:
+    - base
+  show_name: false
+  show_label: false
+  show_icon: false
+  custom_fields:
+    icon1:
+      card:
+        type: custom:button-card
+        template: navbar_icon
+        variables:
+          id: home
+          icon: mdi:home-outline
+          text: Koti
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace-mobile/home
+    icon2:
+      card:
+        type: custom:button-card
+        template: navbar_icon_with_badge
+        entity: sensor.lights_on_count
+        group_expand: true
+        variables:
+          id: lights
+          icon: mdi:ceiling-light-multiple-outline
+          text: Valot
+          notification:
+            color: green
+            count: |
+              [[[ return states['sensor.lights_on_count'].state ]]]
+
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace-mobile/lights
+
+    icon3:
+      card:
+        type: custom:button-card
+        template: navbar_icon_with_badge
+        entity: sensor.devices_on_count
+        variables:
+          id: devices
+          icon: mdi:television
+          text: Laitteet
+          notification:
+            color: green
+            count: |
+              [[[ return states['sensor.devices_on_count'].state ]]]
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace-mobile/devices
+    icon4:
+      card:
+        type: custom:button-card
+        template: navbar_icon_with_badge
+        variables:
+          id: notifications
+          icon: mdi:bell-outline
+          notification:
+            count: |
+              [[[ return states['sensor.notification_count'].state ]]]
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace-mobile/notifications
+  styles:
+    grid:
+      - grid-template-areas: |
+          "icon1 icon2 icon3 icon4"
+      - grid-template-columns: repeat(4, 1fr)
+      - grid-template-rows: 1fr
+      - place-items: center center
+    card:
+      - padding-left: 0.5rem
+      - padding-right: 0.5rem
+      - padding-top: 0
+      - padding-bottom: 0
+      - width: 100vw
+      - overflow: hidden
+      - bottom: 0
+      - left: 0
+      - z-index: 1
+      - position: fixed
+      - border-radius: 0
+      - box-shadow: none
+      - height: 6rem
+      - "--mdc-ripple-press-opacity": 0
+      - backdrop-filter: blur(5px)
+      - "-webkit-backdrop-filter": blur(5px)
+      - background: rgba(var(--card-background-color-rgb), 0.8)

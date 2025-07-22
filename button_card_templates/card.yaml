@@ -1,0 +1,211 @@
+---
+# Pre-defined, ready-to-use cards
+
+heat_pump_state:
+  entity: sensor.nibe_heat_pump_state
+  name: Maalämpö
+  variables:
+    icon_glow: true
+    state_colors:
+      "Käyttövesi": dodgerblue
+      "Lämmitys": orangered
+
+heat_pump_starts:
+  entity: sensor.nibe_daily_num_starts
+  name: Käynnistykset
+  styles:
+    icon:
+      - color: |
+          [[[
+            var color = "red";
+            var current_temp = entity.state;
+            if (current_temp < 10) {
+              color = "green";
+            } else if (current_temp < 13) {
+              color = "yellow";
+            } else if (current_temp < 0.0) {
+              color = "orange";
+            } else {
+              color = "red";
+            }
+
+            return color;
+          ]]]
+
+hot_water_pump:
+  entity: switch.tplink_hs100_1
+  name: Käyttövesi
+  icon: mdi:water-sync
+  variables:
+    extra_entity: sensor.nibe_hot_water_top_temp
+    state_colors:
+      "on": dodgerblue
+
+home_state:
+  variables:
+    extra_entity: sensor.mqtt_electricity_consumption_monthly
+    icon_glow: false
+    state_colors:
+      "Kotona": "#66bb6a"
+      "Nukkumassa": "#0097a7"
+  entity: input_select.home_state
+
+air_quality:
+  entity: sensor.air_quality
+  name: Ilmanlaatu
+  variables:
+    extra_entity: "[[[ return entity.attributes.reporting_entity ]]]"
+    icon_glow: true
+    state_colors:
+      "Hyvä": "green"
+      "Radon nousussa": "yellow"
+      "Radon korkealla": "red"
+      "CO2 korkealla": "yellow"
+      "Matala ilmankosteus": "#00ccf5"
+      "Korkea ilmankosteus": "dodgerblue"
+
+front_door:
+  entity: lock.ulko_ovi
+  variables:
+    icon_glow: true
+    state_colors:
+      "unlocked": "var(--warning-color)"
+
+garage_door:
+  entity: binary_sensor.mqtt_garage_door
+  name: Autotalli
+  variables:
+    extra_entity: sensor.netatmo_garage_temperature
+    icon_glow: true
+    state_colors:
+      "on": "var(--warning-color)"
+
+controls_card:
+  template:
+    - base_card
+  variables:
+    name: false
+  show_name: false
+  show_state: false
+  show_icon: false
+  show_label: false
+  styles:
+    grid:
+      - grid-template-areas: |
+          "icon_name_label icon_name_label icon_name_label"
+          "button1 button2 button3"
+      - grid-template-columns: 1fr 1fr 1fr
+      - grid-template-rows: 2.5rem 1fr
+      - grid-column-gap: 0.4rem
+    custom_fields:
+      button1:
+        - align-self: end
+      button2:
+        - align-self: end
+      button3:
+        - align-self: end
+    card:
+      - padding: var(--button-card-padding) var(--button-card-padding) calc(var(--button-card-padding) / 1.5) var(--button-card-padding)
+
+laundry:
+  entity: sensor.laundry_tower_state
+  variables:
+    icon_glow: true
+    state_colors:
+      "Pyykkää ja kuivaa": "var(--color-blue)"
+      "Pyykkää": "var(--color-blue)"
+      "Kuivaa": "var(--color-green)"
+      "Päällä": "var(--warning-color)"
+
+networking:
+  entity: binary_sensor.udm_internet
+  variables:
+    state_colors:
+      "on": "var(--color-green)"
+      "off": "var(--warning-color)"
+
+tasks:
+  entity: sensor.todoist_all_tasks
+  name: Tehtävät
+  state_display: |
+    [[[
+      if (entity.state == 'on') {
+        if (entity.attributes.items.length == 1) {
+          return 'Yksi tehtävä'
+        } else {
+          return `${entity.attributes.items.length} tehtävää`
+        }
+      } else {
+        return 'Ei tehtäviä'
+      }
+    ]]]
+  variables:
+    icon_glow: true
+    state_colors:
+      "on": "var(--color-green)"
+
+nordpool:
+  entity: sensor.nordpool
+  name: Sähkö
+  styles:
+    icon:
+      - color: |
+          [[[
+            const percentage_to_avg = states['sensor.nordpool'].attributes.price_percent_to_average
+            const avg = states['sensor.nordpool'].attributes.average
+            const current = states['sensor.nordpool'].state
+
+            if (current < avg) {
+              return 'var(--color-green)'
+            } else if (percentage_to_avg > 0.25) {
+              return 'var(--error-color)'
+            } else {
+              return 'var(--warning-color)'
+            }
+          ]]]
+
+cooker_hood:
+  template:
+    - controls_card
+  variables:
+    tap_action: false
+  triggers_update:
+    - switch.liesituuletin_power
+    - light.siemens_cooker_hood
+  custom_fields:
+    icon_name_label:
+      card:
+        type: custom:button-card
+        template: icon_name_state
+        name: |
+          [[[ return variables.name ]]]
+        state_display: |
+          [[[
+            if (entity.state == 'Run') {
+              return 'Käynnissä'
+            } else {
+              return 'Pois päältä'
+            }
+          ]]]
+        entity: |
+          [[[ return entity.entity_id ]]]
+        variables:
+          is_active: |
+            [[[ return entity.state === 'Run' || states['light.siemens_cooker_hood'].state === 'on' ]]]
+          icon_glow: true
+          state_colors:
+            "Run": dodgerblue
+    button1:
+      card:
+        type: custom:button-card
+        template: base_icon_button
+        icon: mdi:power
+        entity: switch.liesituuletin_power
+        variables:
+          is_active: true
+    button3:
+      card:
+        type: custom:button-card
+        template: base_icon_button
+        icon: mdi:lightbulb
+        entity: light.siemens_cooker_hood

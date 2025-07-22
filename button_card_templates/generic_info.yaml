@@ -1,0 +1,227 @@
+info:
+  template:
+    - "base_card"
+    - "base_icon_name"
+  variables:
+    extra_entity: false
+    extra_text: false
+  show_state: true
+  show_last_changed: true
+  custom_fields:
+    state2: |
+      [[[
+        if (variables.extra_entity && states[variables.extra_entity].state !== 'unavailable') {
+          var extra_entity = states[variables.extra_entity]
+
+          if (variables.extra_text) {
+            return `${variables.extra_text} ${helpers.localize(extra_entity)}`
+          } else {
+            return helpers.localize(extra_entity);
+          }
+        }
+
+        return ''
+      ]]]
+  styles:
+    grid:
+      - grid-template-areas: |
+          "i state2"
+          "n n"
+          "s s"
+          "l l"
+      - grid-template-columns: 2.5rem 3.5fr
+      - grid-template-rows: 2.5rem 1.25fr 1.25fr 1fr
+    label:
+      - justify-self: start
+      - align-self: end
+      - filter: opacity(40%)
+    state:
+      - align-self: start
+      - justify-self: start
+      - filter: opacity(40%)
+    name:
+      - justify-self: start
+      - align-self: end
+    custom_fields:
+      state2:
+        - align-self: center
+        - justify-self: end
+        - filter: opacity(40%)
+
+compact_info:
+  template:
+    - info
+    - compact_card
+  styles:
+    grid:
+      - grid-template-areas: |
+          "i n"
+          "i s"
+          "l l"
+      - grid-template-columns: 2.5rem 3.5fr
+      - grid-template-rows: 1.25rem 1.25rem 2fr
+    name:
+      - padding-left: 0.8rem
+      - align-self: end
+    label:
+      - font-size: 0.9rem
+      - align-self: end
+    state:
+      - align-self: start
+      - padding-left: 0.8rem
+
+compact_info_extra:
+  template:
+    - compact_info
+  show_last_changed: false
+  styles:
+    grid:
+      - grid-template-areas: |
+          "i n"
+          "i s"
+          "state2 state2"
+    custom_fields:
+      state2:
+        - place-self: end start
+
+compact_info_additional_text:
+  template:
+    - compact_info
+  variables:
+    additionaL_text: false
+  show_last_changed: false
+  custom_fields:
+    text: |
+      [[[
+        return variables.additional_text ? variables.additional_text : ''
+      ]]]
+  styles:
+    grid:
+      - grid-template-areas: |
+          "i n"
+          "i s"
+          "text text"
+      - grid-template-columns: 2.5rem 3.5fr
+      - grid-template-rows: 1.25rem 1.25rem 2fr
+    custom_fields:
+      text:
+        - place-self: end start
+        - filter: opacity(40%)
+        - font-size: 0.9rem
+
+compact_info_extra_2:
+  template:
+    - compact_info_extra
+  variables:
+    extra_entity_2: false
+    extra_text_2: false
+  show_last_changed: false
+  custom_fields:
+    state3: |
+      [[[
+        if (variables.extra_entity_2 && states[variables.extra_entity_2].state !== 'unavailable') {
+          var extra_entity = states[variables.extra_entity_2]
+
+          if (variables.extra_text_2) {
+            return `${variables.extra_text_2} ${helpers.localize(extra_entity)}`
+          } else {
+            return helpers.localize(extra_entity);
+          }
+        }
+
+        return ''
+      ]]]
+  styles:
+    grid:
+      - grid-template-areas: |
+          "i n"
+          "i s"
+          ". ."
+          "state2 state2"
+          "state3 state3"
+      - grid-template-rows: 1.25rem 1.25rem 0.5fr 0.5fr 0.5fr
+    custom_fields:
+      state3:
+        - place-self: end start
+        - filter: opacity(40%)
+
+info_text:
+  variables:
+    summary: ""
+    description: false
+    active: true
+    icon_color: "var(--custom-icon-color-not-active)"
+    icon_glow: false
+    show_last_changed: false
+  template:
+    - "base_icon_name"
+  aspect_ratio: ""
+  show_icon: true
+  show_state: true
+  show_name: false
+  show_label: true
+  label: |
+    [[[
+      if (variables.description) {
+        return marked.parseInline(variables.description)
+      }
+      return undefined
+    ]]]
+  state_display: "[[[ return variables.summary ]]]"
+  styles:
+    grid:
+      - grid-template-areas: |
+          [[[
+            if (variables.description || variables.show_last_changed) {
+              return '"i s" "i l"'
+            } else {
+              return '"i s"'
+            }
+          ]]]
+      - grid-template-columns: 0.15fr 0.85fr
+      - grid-template-rows: |
+          [[[
+            if (variables.description || variables.show_last_changed) {
+              return 'min-content min-content'
+            } else {
+              return 'min-content'
+            }
+          ]]]
+    img_cell:
+      - background-color: transparent
+      - border-radius: 0
+      - justify-self: start
+      - width: 1.5rem
+      - overflow: visible
+    state:
+      - padding: 0 0 0 0
+      - font-weight: 300
+      - justify-self: start
+      - align-self: |
+          [[[
+            return variables.description ? 'end': 'center'
+          ]]]
+      - font-size: 1.1rem
+    label:
+      - padding: 0 0 0 0
+      - filter: "opacity(40%)"
+      - font-size: 1.0rem
+      - justify-self: start
+      - align-self: start
+      - text-overflow: unset
+      - white-space: unset
+      - word-break: break-word
+      - text-align: initial
+      - text-justify: none
+    card:
+      - background-color: transparent
+      - justify-self: start
+      - border-radius: 0
+      - box-shadow: none
+      - margin: 0 0 0 0
+      - padding: 0 0 0 0
+      - max-width: 100%
+  extra_styles: |
+    a {
+      color: var(--mdc-theme-primary);
+    }

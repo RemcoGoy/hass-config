@@ -1,0 +1,85 @@
+user:
+  template:
+    - info
+    - notification_icon
+  variables:
+    battery_charge_entity: false
+    battery_charging_status_entity: false
+  show_state: true
+  show_last_changed: true
+  show_label: false
+  show_name: true
+  show_entity_picture: true
+  tap_action: !include ../popups/common/user.yaml
+  custom_fields:
+    state2: |
+      [[[
+        var extra_info = ''
+        if (variables.battery_charging_status_entity &&
+            (states[variables.battery_charging_status_entity].state === 'on' ||
+            states[variables.battery_charging_status_entity].state.toLowerCase() === 'charging')) {
+          extra_info = `<ha-icon icon="mdi:flash" style="--mdc-icon-size: 0.9rem;"></ha-icon>`
+        }
+
+        if (variables.battery_charge_entity) {
+          var extra_entity = states[variables.battery_charge_entity]
+          extra_info += ` ${extra_entity.state} ${extra_entity.attributes.unit_of_measurement}`
+        }
+
+        return extra_info
+      ]]]
+    notification: |
+      [[[
+        var icon = undefined
+        if (entity.state === 'home') {
+          icon = 'mdi:home'
+        } else if (entity.state === 'not_home') {
+          icon = 'mdi:home-remove'
+        }
+
+        if (icon) {
+          return `<ha-icon icon="${icon}" style="--mdc-icon-size: 0.9rem; color: var(--primary-background-color);"></ha-icon>`
+        } else {
+          return undefined
+        }
+      ]]]
+  styles:
+    icon:
+      - width: 3rem
+    custom_fields:
+      notification:
+        - left: 3rem
+        - top: 0.9rem
+        - background-color: |
+            [[[
+              if (entity.state !== 'home') {
+                return 'rgb(var(--color-blue-rgb))'
+              } else {
+                return 'rgb(var(--color-green-rgb))'
+              }
+            ]]]
+
+compact_user:
+  template:
+    - compact_info
+    - user
+  aspect_ratio: null
+  show_last_changed: false
+  styles:
+    grid:
+      - grid-template-areas: |
+          "i n state2"
+          "i s s"
+      - grid-template-columns: 4rem 2fr 1.5fr
+      - grid-template-rows: 2rem 2rem
+    icon:
+      - width: 4rem
+    card:
+      - height: calc(var(--button-card-padding) * 2 + 4rem)
+    custom_fields:
+      notification:
+        - left: "3.5rem"
+        - top: "1rem"
+      state2:
+        - place-self: end end
+        - padding-left: 0.5rem

@@ -1,0 +1,323 @@
+---
+base_sensor:
+  variables:
+    icon_color: |
+      [[[
+        var device_class = entity.attributes.device_class
+        var state = entity.state
+        var color = 'var(--custom-icon-color-not-active)'
+
+        if (device_class === 'temperature') {
+          color = "red"
+          var current_temp = entity.state;
+          if (current_temp < 20) {
+            color = "var(--color-blue)"
+          } else if (current_temp < 23) {
+            color = "var(--color-green)"
+          } else if (current_temp < 25) {
+            color = "var(--color-yellow)"
+          } else {
+            color = "var(--color-red)"
+          }
+        } else if (device_class === 'humidity') {
+          color = 'dodgerblue'
+        } else if (device_class === 'carbon_dioxide') {
+          color = 'var(--color-green)'
+        } else if (device_class === 'radon') {
+          color = 'var(--color-yellow)'
+        }
+
+        return color
+      ]]]
+  styles:
+    icon:
+      - color: |
+          [[[ return variables.icon_color ]]]
+      - filter: |
+          [[[
+            if (variables.icon_color != 'var(--custom-icon-color-not-active)') {
+              return `drop-shadow(0 0 var(--button-card-icon-drop-shadow-size) ${variables.icon_color})`
+            } else {
+              return 'none'
+            }
+          ]]]
+
+sensor:
+  template:
+    - base_card
+    - base_icon_name
+    - base_sensor
+  show_state: true
+  show_last_changed: false
+  state_display: |
+    [[[
+      var state = entity.state
+      if (state == 'on') {
+        state = variables.text_state_on
+      } else if (state == 'off') {
+        state = variables.text_state_off
+      }
+
+      if (entity.attributes.unit_of_measurement) {
+        return state + '<span class="unit"> ' + entity.attributes.unit_of_measurement + '</span>'
+      } else {
+        return state
+      }
+    ]]]
+  extra_styles: |
+    span.unit {
+      font-size: 1.2rem;
+    }
+  styles:
+    grid:
+      - grid-template-areas: |
+          "i ."
+          "n n"
+          "s s"
+          "s s"
+      - grid-template-columns: 2.5rem 3.5fr
+      - grid-template-rows: 2.5rem 1.25fr 1.25fr 1fr
+    state:
+      - align-self: end
+      - justify-self: start
+      - font-size: 1.8rem
+      - font-weight: 300
+    name:
+      - justify-self: start
+      - align-self: end
+
+compact_sensor:
+  template:
+    - sensor
+    - compact_card
+  show_label: true
+  styles:
+    grid:
+      - grid-template-areas: |
+          "i n"
+          "i l"
+          "s s"
+      - grid-template-columns: 2.5rem 3.5fr
+      - grid-template-rows: 1.25rem 1.25rem 3.5fr
+    name:
+      - padding-left: 0.8rem
+      - align-self: end
+    label:
+      - filter: opacity(40%)
+      - place-self: start start
+      - padding-left: 0.8rem
+      - font-size: 0.9rem
+
+sensor_graph_new:
+  template:
+    - base_card
+    - base_icon_name
+    - base_sensor
+  variables:
+    chart_height: 45%
+  show_state: true
+  show_last_changed: false
+  custom_fields:
+    graph:
+      card:
+        type: custom:apexcharts-card
+        card_mod:
+          style: |
+            ha-card {
+              box-shadow: none;
+              border-radius: 0;
+              background-color: transparent;
+            }
+        experimental:
+          color_threshold: true
+        config_templates:
+          - base_simple
+        graph_span: 24h
+        span:
+          start: day
+        apex_config:
+          legend:
+            show: false
+          tooltip:
+            enabled: false
+          chart:
+            height: "[[[ return variables.chart_height ]]]"
+        series:
+          - yaxis_id: first
+            type: column
+            entity: "[[[ return entity.entity_id ]]]"
+            stroke_width: 5
+            data_generator: |
+              return (entity.attributes.raw_today.map((entry, index) => {
+                const timestamp = new Date(entry.start);
+                return [timestamp, entry.value];
+              }))
+            color_threshold:
+              - value: 0
+                color: "rgb(128, 201, 148)"
+              - value: 5
+                color: "#FCD663"
+              - value: 7
+                color: "#F18B82"
+  styles:
+    grid:
+      - grid-template-areas: |
+          ". . . ."
+          ". i s ."
+          ". i n ."
+          "graph graph graph graph"
+      - grid-template-columns: var(--button-card-padding) 2.5rem 3.5fr var(--button-card-padding)
+      - grid-template-rows: var(--button-card-padding) 1.25rem 1.25rem 3fr
+    name:
+      - padding-left: 0.5rem
+      - font-size: 0.9rem
+      - filter: opacity(40%)
+      - place-self: start
+      - margin-top: 0
+    state:
+      - padding-left: 0.5rem
+      - font-size: 1rem
+      - place-self: start
+    card:
+      - padding: 0
+    custom_fields:
+      graph:
+        - place-self: end stretch
+
+compact_sensor_graph_new:
+  template:
+    - sensor_graph_new
+    - compact_card
+  variables:
+    chart_height: 80px
+
+sensor_graph:
+  variables:
+    line_color: dodgerblue
+    graph_height: 200
+    show_extrema: false
+    color_thresholds: []
+  show_last_changed: false
+  show_state: false
+  show_icon: false
+  show_name: false
+  show_label: false
+  template:
+    - base
+    - base_sensor
+    - info
+  hold_action:
+    action: more-info
+  custom_fields:
+    icon_state_name:
+      card:
+        type: custom:button-card
+        template:
+          - base_icon_name
+          - base_sensor
+        show_state: true
+        show_label: false
+        entity: "[[[ return entity.entity_id ]]]"
+        name: "[[[ return variables.name_override ]]]"
+        styles:
+          grid:
+            - grid-template-areas: |
+                "i s"
+                "i n"
+            - grid-template-columns: 2.5rem 3fr
+            - grid-template-rows: 1.25rem 1.25rem
+          name:
+            - padding-left: 0.5rem
+            - font-size: 0.9rem
+            - filter: opacity(40%)
+            - place-self: start
+            - margin-top: 0
+          state:
+            - padding-left: 0.5rem
+            - font-size: 1rem
+            - place-self: start
+          card:
+            - box-shadow: none
+            - border-radius: var(--border-radius) var(--border-radius) 0 0
+            - padding: var(--button-card-padding) var(--button-card-padding) 0 var(--button-card-padding)
+    graph:
+      card:
+        type: "custom:mini-graph-card"
+        entities:
+          - "[[[ return entity.entity_id ]]]"
+        font_size: 60
+        points_per_hour: 0.4
+        line_width: 5
+        line_color: "[[[ return variables.line_color ]]]"
+        height: "[[[ return variables.graph_height ]]]"
+        align_state: right
+        show:
+          name: false
+          icon: false
+          state: false
+          extrema: "[[[ return variables.show_extrema ]]]"
+        color_thresholds: "[[[ return variables.color_thresholds ]]]"
+        style: |
+          ha-card {
+            box-shadow: none;
+            border-radius: 0 0 var(--border-radius) var(--border-radius)
+            padding: 0px 0px 0px 0px !important;
+          }
+          ha-card.flex.type-custom-mini-graph-card {
+            padding: 0px 0px 0px 0px !important;
+          }
+  styles:
+    grid:
+      - grid-template-areas: |
+          "icon_state_name"
+          "graph"
+      - grid-template-columns: 1fr
+      - grid-template-rows: 1fr 3fr
+    card:
+      - border-radius: var(--border-radius)
+      - box-shadow: var(--box-shadow)
+      - padding: 0px
+    custom_fields:
+      graph:
+        - align-self: end
+
+compact_sensor_graph:
+  template:
+    - sensor_graph
+    - compact_card
+  variables:
+    graph_height: 150
+
+# Predefined thresholds
+
+sensor_graph_thresholds_indoor_temperature:
+  variables:
+    color_thresholds:
+      - value: 19
+        color: "#1E90FF"
+      - value: 22
+        color: "#008000"
+      - value: 25
+        color: "#FFFF00"
+      - value: 28
+        color: "#FF0000"
+
+sensor_graph_thresholds_co2:
+  variables:
+    color_thresholds:
+      - value: 800
+        color: "#008000"
+      - value: 1000
+        color: "#FFFF00"
+      - value: 1500
+        color: "#FF0000"
+
+sensor_graph_thresholds_radon:
+  variables:
+    color_thresholds:
+      - value: 0
+        color: "#008000"
+      - value: 100
+        color: "#FFFF00"
+      - value: 150
+        color: "#FF0000"

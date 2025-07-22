@@ -1,0 +1,79 @@
+---
+media_player:
+  template:
+    - controls_card
+  variables:
+    tap_action: false
+    button1_tap_action: false
+    state_colors:
+      "on": "var(--color-green)"
+  tap_action:
+    action: |
+      [[[ return variables.tap_action ? variables.tap_action.action : 'more-info' ]]]
+    # Action assumed to be a browser_mod action (i.e. a popup)
+    browser_mod: |
+      [[[ return variables.tap_action ? variables.tap_action.browser_mod : undefined ]]]
+  custom_fields:
+    icon_name_label:
+      card:
+        type: custom:button-card
+        template: icon_name_state
+        name: |
+          [[[ return variables.name ]]]
+        entity: |
+          [[[ return entity.entity_id ]]]
+        variables:
+          icon_glow: true
+          state_colors: |
+            [[[ return variables.state_colors ]]]
+        tap_action: |
+          [[[ return variables.tap_action ? variables.tap_action : { action: 'more-info' } ]]]
+    button1:
+      card:
+        type: custom:button-card
+        template: base_icon_button
+        icon: mdi:power
+        entity: |
+          [[[ return entity.entity_id ]]]
+        variables:
+          is_active: true
+        tap_action: |
+          [[[
+            if (variables.button1_tap_action) {
+              return variables.button1_tap_action
+            } else {
+              return {
+                action: 'call-service',
+                service: entity.state === 'off' ? 'media_player.turn_on' : 'media_player.turn_off',
+                data: { entity_id: entity.entity_id }
+              };
+            }
+          ]]]
+
+    button2:
+      card:
+        type: custom:button-card
+        template: base_icon_button
+        icon: mdi:volume-minus
+        entity: |
+          [[[ return entity.entity_id ]]]
+        tap_action:
+          action: call-service
+          service: media_player.volume_down
+          data:
+            entity_id: |
+              [[[ return entity.entity_id ]]]
+
+    button3:
+      card:
+        type: custom:button-card
+        template: base_icon_button
+        icon: mdi:volume-plus
+        entity: |
+          [[[ return entity.entity_id ]]]
+        tap_action:
+          action: call-service
+          service: media_player.volume_up
+          data:
+            entity_id: |
+              [[[ return entity.entity_id ]]]

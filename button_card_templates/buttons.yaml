@@ -1,0 +1,350 @@
+---
+icon_text_button:
+  variables:
+    is_active: true
+  template:
+    - base
+  show_icon: true
+  show_name: true
+  show_state: false
+  styles:
+    grid:
+      - grid-template-areas: |
+          "i n"
+      - grid-template-columns: |
+          "min-content min-content"
+      - grid-template-rows: 1fr
+      - justify-content: center
+    icon:
+      - width: 1.6rem
+      - color: var(--primary-text-color)
+    img_cell:
+      - width: 1.6rem
+    name:
+      - margin-left: 1rem
+    card:
+      - background-color: |
+          [[[ return variables.is_active ? 'var(--button-color)' : 'rgba(255, 255, 255, 0.12)' ]]]
+      - filter: |
+          [[[ return variables.is_active ? 'none' : 'opacity(30%)' ]]]
+      - "-webkit-box-shadow": |
+          [[[ return variables.is_active ? 'var(--box-shadow)' : 'none' ]]]
+      - box-shadow: |
+          [[[ return variables.is_active ? 'var(--box-shadow)' : 'none' ]]]
+      - height: 3rem
+      - padding: 0 1rem 0 1rem
+      - border-radius: 0.5rem
+      - width: 100%
+
+icon_button:
+  template:
+    - icon_text_button
+  show_name: false
+  styles:
+    card:
+      - width: 5rem
+      - height: 5rem
+      - padding: none
+
+button_hass_update:
+  template:
+    - icon_text_button
+  name: Päivitä nyt
+  entity: binary_sensor.notification_hass_update_available
+  tap_action:
+    action: |
+      [[[ return variables.is_active ? 'call-service' : 'none' ]]]
+    service: |
+      [[[ return variables.is_active ? 'rest_command.hass_update' : undefined ]]]
+    confirmation:
+      text: |
+        [[[ return `Haluatko varmasti päivittää Home Assistant versioon ${states['sensor.hass_version_latest'].state}?` ]]]
+
+button_synology_reboot:
+  template:
+    - icon_text_button
+  variables:
+    is_active: true
+  name: Uudelleenkäynnistä
+  entity: button.synology_reboot
+  tap_action:
+    action: call-service
+    service: button.press
+    data:
+      entity_id: button.synology_reboot
+    confirmation:
+      text: Haluatko varmasti käynnistää Synologyn uudelleen?
+
+button_galaxy_tab_wake_up:
+  template:
+    - icon_text_button
+  variables:
+    is_active: true
+  name: Herätä
+  entity: automation.wake_up_galaxy_tab_a8
+  tap_action:
+    action: call-service
+    service: automation.trigger
+    data:
+      entity_id: automation.wake_up_galaxy_tab_a8
+
+button_vacuum:
+  template:
+    - icon_button
+  entity: vacuum.roborock_s6_pure
+
+button_vacuum_clean:
+  template:
+    - button_vacuum
+  variables:
+    is_active: |
+      [[[ return entity.state === 'docked' ]]]
+  triggers_update:
+    - input_boolean.vacuum_clean_entrance
+    - input_boolean.vacuum_clean_kitchen
+    - input_boolean.vacuum_clean_living_room
+    - input_boolean.vacuum_clean_bedroom
+    - input_boolean.vacuum_clean_office
+    - input_boolean.vacuum_clean_otsos_room
+    - input_boolean.vacuum_clean_sisus_room
+    - input_boolean.vacuum_clean_wc
+  name: Aloita
+  tap_action:
+    action: |
+      [[[ return variables.is_active ? 'call-service' : 'none' ]]]
+    service: vacuum.send_command
+    data:
+      entity_id: |
+        [[[ return entity.entity_id ]]]
+      command: app_segment_clean
+      params: |
+        [[[
+          var rooms = [
+            { sensor: 'input_boolean.vacuum_clean_entrance',    id: 16 },
+            { sensor: 'input_boolean.vacuum_clean_kitchen',     id: 24 },
+            { sensor: 'input_boolean.vacuum_clean_living_room', id: 25 },
+            { sensor: 'input_boolean.vacuum_clean_bedroom',     id: 19 },
+            { sensor: 'input_boolean.vacuum_clean_office',      id: 20 },
+            { sensor: 'input_boolean.vacuum_clean_otsos_room',  id: 23 },
+            { sensor: 'input_boolean.vacuum_clean_sisus_room',  id: 22 },
+            { sensor: 'input_boolean.vacuum_clean_wc',          id: 21 },
+          ]
+
+          return rooms.filter(room => states[room.sensor].state === 'on')
+            .map(room => room.id)
+        ]]]
+
+button_vacuum_start_stop:
+  template:
+    - button_vacuum
+  variables:
+    is_active: |
+      [[[ return entity.state !== 'docked' ]]]
+  icon: mdi:play-pause
+  name: |
+    [[[
+      return entity.state === 'docked' || entity.state === 'paused' || entity.state === 'idle'
+          ? 'Jatka'
+          : 'Pysäytä';
+    ]]]
+  tap_action:
+    action: |
+      [[[ return variables.is_active ? 'call-service' : 'none' ]]]
+    service: |
+      [[[
+        return entity.state === 'docked' || entity.state === 'paused'
+            ? 'vacuum.start'
+            : 'vacuum.pause';
+      ]]]
+    data:
+      entity_id: |
+        [[[ return entity.entity_id ]]]
+
+button_vacuum_return_to_base:
+  template:
+    - button_vacuum
+  variables:
+    is_active: |
+      [[[ return entity.state !== 'docked' ]]]
+  icon: mdi:home
+  name: Telakkaan
+  tap_action:
+    action: |
+      [[[ return variables.is_active ? 'call-service' : 'none' ]]]
+    service: vacuum.return_to_base
+    data:
+      entity_id: |
+        [[[ return entity.entity_id ]]]
+
+button_vacuum_dustbin_emptied:
+  template:
+    - button_vacuum
+  variables:
+    is_active: |
+      [[[ return states['sensor.roborock_s6_pure_dustbin_level'].state !== 0 ]]]
+  icon: mdi:trash-can-outline
+  name: Pölysäiliö tyhjennetty
+  tap_action:
+    action: |
+      [[[ return variables.is_active ? 'call-service' : 'none' ]]]
+    service: automation.trigger
+    target:
+      entity_id: automation.vacuum_dustbin_emptied
+
+button_request_location_update:
+  template:
+    - icon_text_button
+  variables:
+    is_active: true
+  icon: mdi:map-marker
+  name: |
+    [[[
+      return (entity.attributes.entity_id ? "Päivitä sijannit" : "Päivitä sijainti")
+    ]]]
+  tap_action:
+    action: call-service
+    service: |
+      [[[
+        return entity.attributes.entity_id
+          ? "notify.everyone"
+          : `notify.mobile_app_${states[entity.entity_id].attributes.id}`
+      ]]]
+    data:
+      message: request_location_update
+      data:
+        ttl: 0
+        priority: high
+
+harmony_remote_button:
+  template:
+    - base_icon_button
+  variables:
+    command: false
+    device: false
+    is_active: false
+    box_shadow: "3px 3px 5px rgb(2, 2, 2), -3px -3px 5px rgb(60, 60, 60)"
+  entity: remote.olohuone
+  tap_action:
+    action: call-service
+    service: remote.send_command
+    data: |
+      [[[
+        const data = {
+          entity_id: entity.entity_id
+        }
+
+        if (variables.command) {
+          data['command'] = variables.command
+        }
+
+        if (variables.device) {
+          data['device'] = variables.device
+        }
+
+        return data
+      ]]]
+  styles:
+    icon:
+      - width: 2.5rem
+      - color: var(--primary-text-color)
+      - filter: drop-shadow(0 0 var(--button-card-icon-drop-shadow-size) var(--primary-text-color))
+    card:
+      - height: 4rem
+      - width: 4rem
+      - background: "linear-gradient(145deg, rgb(25, 25, 25), rgb(10, 10, 10))"
+      - "-webkit-box-shadow": |
+          [[[
+            if (variables.is_active) {
+              return '0 0 0.5rem 0.1rem yellow'
+            } else {
+              return variables.box_shadow
+            }
+          ]]]
+      - box-shadow: |
+          [[[
+            if (variables.is_active) {
+              return '0 0 0.5rem 0.1rem yellow'
+            } else {
+              return variables.box_shadow
+            }
+          ]]]
+      - transition: all 2s ease
+      - margin: 0.2rem
+
+harmony_remote_button_empty:
+  template:
+    - harmony_remote_button
+  tap_action:
+    action: none
+  show_icon: false
+  styles:
+    card:
+      - background-color: transparent
+      - background: none
+      - box-shadow: none
+      - "-webkit-box-shadow": none
+
+harmony_remote_button_text:
+  show_icon: false
+  show_name: true
+  styles:
+    name:
+      - text-shadow: 0 0 var(--button-card-icon-drop-shadow-size) var(--primary-text-color)
+
+harmony_remote_button_off:
+  template:
+    - harmony_remote_button
+  icon: mdi:power
+  tap_action:
+    action: call-service
+    service: remote.turn_off
+    data:
+      entity_id: |
+        [[[ return entity.entity_id ]]]
+
+harmony_remote_button_num:
+  template:
+    - harmony_remote_button
+  variables:
+    device: Samsung TV
+    number: 0
+  icon: |
+    [[[ return `mdi:numeric-${variables.number}` ]]]
+  tap_action:
+    action: call-service
+    service: remote.send_command
+    data:
+      entity_id: |
+        [[[ return entity.entity_id ]]]
+      command: |
+        [[[ return variables.number ]]]
+      device: |
+        [[[ return variables.device ]]]
+
+harmony_remote_button_activity:
+  template:
+    - harmony_remote_button
+  variables:
+    activity: false
+  tap_action:
+    action: call-service
+    service: remote.turn_on
+    data:
+      entity_id: |
+        [[[ return entity.entity_id ]]]
+      activity: |
+        [[[ return variables.activity ]]]
+
+harmony_remote_button_set_source:
+  template:
+    - harmony_remote_button
+  variables:
+    source: false
+  tap_action:
+    action: call-service
+    service: media_player.select_source
+    data:
+      entity_id: |
+        [[[ return entity.entity_id ]]]
+      source: |
+        [[[ return variables.source ]]]

@@ -1,0 +1,106 @@
+---
+vacuum:
+  template:
+    - controls_card
+  variables:
+    tap_action: false
+  triggers_update:
+    - input_boolean.vacuum_clean_entrance
+    - input_boolean.vacuum_clean_kitchen
+    - input_boolean.vacuum_clean_living_room
+    - input_boolean.vacuum_clean_bedroom
+    - input_boolean.vacuum_clean_office
+    - input_boolean.vacuum_clean_otsos_room
+    - input_boolean.vacuum_clean_sisus_room
+    - input_boolean.vacuum_clean_wc
+  tap_action:
+    action: |
+      [[[ return variables.tap_action ? variables.tap_action.action : 'none' ]]]
+    # Action assumed to be a browser_mod action (i.e. a popup)
+    browser_mod: |
+      [[[ return variables.tap_action ? variables.tap_action.browser_mod : undefined ]]]
+  custom_fields:
+    icon_name_label:
+      card:
+        type: custom:button-card
+        template: icon_name_state
+        entity: |
+          [[[ return entity.entity_id ]]]
+        tap_action: |
+          [[[ return variables.tap_action ]]]
+        variables:
+          is_active: |
+            [[[ return entity.state === 'docked' ]]]
+          icon_glow: true
+          state_colors:
+            "cleaning": green
+            "paused": yellow
+            "returning": dodgerblue
+            "error": var(--color-warning)
+    button1:
+      card:
+        type: custom:button-card
+        template: base_icon_button
+        entity: |
+          [[[ return entity.entity_id ]]]
+        variables:
+          is_active: |
+            [[[ return entity.state === 'docked' ]]]
+        tap_action:
+          action: call-service
+          service: vacuum.send_command
+          data:
+            entity_id: |
+              [[[ return entity.entity_id ]]]
+            command: app_segment_clean
+            params: |
+              [[[
+                var rooms = [
+                  { sensor: 'input_boolean.vacuum_clean_entrance',    id: 16 },
+                  { sensor: 'input_boolean.vacuum_clean_kitchen',     id: 24 },
+                  { sensor: 'input_boolean.vacuum_clean_living_room', id: 25 },
+                  { sensor: 'input_boolean.vacuum_clean_bedroom',     id: 19 },
+                  { sensor: 'input_boolean.vacuum_clean_office',      id: 20 },
+                  { sensor: 'input_boolean.vacuum_clean_otsos_room',  id: 23 },
+                  { sensor: 'input_boolean.vacuum_clean_sisus_room',  id: 22 },
+                  { sensor: 'input_boolean.vacuum_clean_wc',          id: 21 },
+                ]
+              ]]]
+
+    button2:
+      card:
+        type: custom:button-card
+        icon: mdi:play-pause
+        template: base_icon_button
+        variables:
+          is_active: |
+            [[[ return entity.state !== 'docked' ]]]
+        entity: |
+          [[[ return entity.entity_id ]]]
+        tap_action:
+          action: call-service
+          service: |
+            [[[
+              return entity.state === 'docked' || entity.state === 'paused'
+                  ? 'vacuum.start'
+                  : 'vacuum.pause';
+            ]]]
+          data:
+            entity_id: |
+              [[[ return entity.entity_id ]]]
+    button3:
+      card:
+        type: custom:button-card
+        template: base_icon_button
+        icon: mdi:home-outline
+        variables:
+          is_active: |
+            [[[ return entity.state !== 'docked' ]]]
+        entity: |
+          [[[ return entity.entity_id ]]]
+        tap_action:
+          action: call-service
+          service: vacuum.return_to_base
+          data:
+            entity_id: |
+              [[[ return entity.entity_id ]]]
