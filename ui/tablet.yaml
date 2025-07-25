@@ -13,7 +13,7 @@ views:
       grid-gap: 3vw 2vw
       grid-template-areas: |
         ". .        .       .        .       ."
-        ". sidebar  home    lvi      devices ."
+        ". sidebar  home    haw      devices ."
         ". sidebar  lights  children family  ."
         ". .        footer  footer   footer  ."
     cards:
@@ -39,10 +39,11 @@ views:
               place-self: "start center"
             template: clock
             entity: sensor.time
+            tap_action: !include ../popups/common/weather-forecast.yaml
             variables:
               entity_weather: weather.home
               entity_date: sensor.date
-              # entity_temperature: sensor.outside_temperature
+              entity_temperature: sensor.outside_temperature
               weather_tap_action: !include ../popups/common/weather-forecast.yaml
 
           - type: vertical-stack
@@ -61,7 +62,7 @@ views:
         cards:
           - type: "custom:button-card"
             template: group_title
-            name: Koti
+            name: Home
             tap_action: !include ../popups/tablet/home.yaml
 
           - type: grid
@@ -112,7 +113,7 @@ views:
         cards:
           - type: "custom:button-card"
             template: group_title
-            name: Valaistus
+            name: Lights
             tap_action: !include ../popups/tablet/lights.yaml
 
           - type: grid
@@ -146,16 +147,16 @@ views:
                   name: Makuuhuone
 
       ###
-      ### LVI
+      ### Heating and water
       ###
 
       - type: vertical-stack
         view_layout:
-          grid-area: "lvi"
+          grid-area: "haw"
         cards:
           - type: "custom:button-card"
             template: group_title
-            name: Lämmitys ja vesi
+            name: Heating and water
             tap_action: !include ../popups/tablet/heating.yaml
 
           - type: grid
@@ -255,7 +256,7 @@ views:
         cards:
           - type: "custom:button-card"
             template: group_title
-            name: Perhe
+            name: Family
             tap_action: !include ../popups/common/family-map.yaml
 
           - type: grid

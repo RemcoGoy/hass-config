@@ -313,11 +313,11 @@ sensor_temperature_outdoor:
       func: avg
       duration: 1h
   header:
-    title: Ulkolämpötila
+    title: Outdoor Temperature
     show: true
     show_states: true
   series:
-    - entity: sensor.netatmo_outdoor_temperature
+    - entity: sensor.outside_temperature
       stroke_width: 2
       color_threshold:
         - value: -5

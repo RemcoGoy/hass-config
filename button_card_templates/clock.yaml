@@ -89,6 +89,7 @@ clock:
         show_label: false
         show_name: false
         entity: "[[[ return variables.entity_date ]]]"
+        tap_action: !include ../popups/common/weather-forecast.yaml
         state_display: |
           [[[
             if (variables.entity_date) {
